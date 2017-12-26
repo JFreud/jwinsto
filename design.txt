@@ -1,0 +1,59 @@
+Fencing Tournament System
+By Max Chan and Jerome Freudenberg
+Period 4
+
+Statement:
+	The current system the United States Fencing Association employs to transfer and display results at tournaments is outdated and obsolete. Referees from across the hall must send the fencers to turn in their results at the end of a bout or pool, which are then manually entered into the system. This renders the process slow and prone to human error, something that could be avoided by digitizing the process and having referees submit results directly, thereby reducing wait-time and allowing fencers to immediately catch mistakes in scoring. The goal is to minimize the role of the so-called “bout committee” and ultimately replace it completely. (Note, Direct Elimination Bouts from here on will be referred to as “DE’s”
+
+User Interface: 
+	The users will interact with the program through the command line. Referees can use commands to write results in a specific format and then send the data over using a command. Both fencers and referees will be able to view live results (an ASCII representation), have the ability to dispute a scoring, and view only the bouts of a specific fencer. If time allows, we may implement a simple GUI but it isn’t a priority.
+
+Technical Design:
+	Class topics 
+		- Allocate memory (variables)
+		- File reading and writing (send results)
+		- Processes (fork to let multiple clients communicate with the server)
+		- Signals (sighandler)
+		- Pipes (fencer/referee-system interaction)
+		- Shared memory???
+		- Semaphores (only let one referee write to the each pool at a time)
+		- Networking (accessible on multiple devices)
+
+	Project Breakdown
+		Jerome - digital “bout committee” side
+		Max - fencer/referee side
+		Mr. DW - project testing and grade assignment
+
+	Data Structures
+		- “bout” struct will contain bout number, winner, winner’s score, and loser’s score
+		- Pool results will be stored in array of “bouts”, one for each pool
+		- DE’s will be resulted stored in a reverse binary tree of sorts, with results on the higher tiers of the tree being entered as the bouts are fenced
+		-Priority Queue to write data to DE Binary Tree
+			- Lower tableau results get priority
+		-Sorted array to determine post-pool seeding (by wins and indicator)
+
+	Algorithms
+		-3 way handshake
+		-Some form of sorting algorithm (I like Heap Sort, but would considering using one that’s easier to write, as I don’t think a fencing event has ever exceeded 270 fencers)
+		- Priority Queue
+
+Timeline
+*dates are left unspecified due to not knowing the specific due date
+
+
+Referee/Bout Committee interaction - End of first week of January
+Displaying results - Beginning of second week of January
+Multiple Clients and Semaphores - Middle of second week of January
+Disputing claims - End of second week of January
+“Bug” fixing (entire project?) - Night before submission
+
+
+Fencing Term Definitions
+Referee - monitors a bout and records the score at the end
+Fencer - someone who is competing in a fencing tournament
+Bout - one fencer vs. another fencer.
+Pool - group of usually 5-8 fencers who compete for direct elimination seeding. Sometimes the lower seeds are cut out from the competition. 
+DE - direct elimination bout that goes to 15 points. The winner proceeds to the next bout until one winner is left.
+Indicator -[touches scored] - [touches received]
+Bout Committee - group of people or a single, lonely, person sitting behind a table and handling the influx of data from fencers and refs.
+Fencing - sport where you can stab each other with flimsy metal sticks
