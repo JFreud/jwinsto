@@ -1,21 +1,21 @@
-#include "pipe_networking.h"
+#include "network.h"
 
 
 //copy paste from pipe_networking
 int main() {
 
-  int to_server;
-  int from_server;
+  int to_committee;
+  int from_committee;
   char buffer[BUFFER_SIZE];
 
-  from_server = client_handshake( &to_server );
+  from_committee = referee_handshake( &to_committee );
 
   while (1) {
-    printf("enter data: ");
+    printf("enter results: ");
     fgets(buffer, sizeof(buffer), stdin);
     *strchr(buffer, '\n') = 0;
-    write(to_server, buffer, sizeof(buffer));
-    read(from_server, buffer, sizeof(buffer));
+    write(to_committee, buffer, sizeof(buffer));
+    read(from_committee, buffer, sizeof(buffer));
     printf("received: [%s]\n", buffer);
   }
 }
