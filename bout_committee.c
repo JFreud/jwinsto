@@ -40,6 +40,8 @@ void subcommittee(int from_client) {
   char buffer[BUFFER_SIZE];
 
   struct bout this_bout;
+  struct bout bout_array[1000];
+  int bout_count = 0;
 
   while(read(from_client, buffer, sizeof(buffer))) {
     char * input = strdup(buffer);
@@ -59,12 +61,14 @@ void subcommittee(int from_client) {
     }
     else if (strcmp(type, "lsc") == 0) {
       this_bout.lose_score = atoi(input);
+      print_bout(this_bout);
+      bout_array[bout_count] = this_bout;
+      bout_count++;
     }
     else {
       printf("Something isn't right\n");
       exit(0);
     }
-    print_bout(this_bout);
     write(to_client, buffer, sizeof(buffer));
   }
   exit(0);
