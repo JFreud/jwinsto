@@ -111,7 +111,7 @@ int referee_handshake(int *to_committee) {
   printf("[referee] handshake: removed pp\n");
 
   //send ACK to committee
-  write(*to_committee, ACK, sizeof(buffer));
+  write(*to_committee, REF, sizeof(buffer));
 
   return from_committee;
 }
