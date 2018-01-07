@@ -9,6 +9,7 @@
 #include <signal.h>
 #include <ctype.h>
 #include <time.h>
+#include <string.h>
 
 #define FEN "OPA"
 #define REF "BLACK_CARD"
@@ -22,11 +23,11 @@ struct bout {
   int tableau;
   int winner_seed;
   int loser_seed;
-  char referee[128];
-  char winner[128];
-  char loser[128];
-  int * win_score; //because read() takes void *
-  int * lose_score; //because read() takes void *
+  char * referee;
+  char * winner;
+  char * loser;
+  int win_score;
+  int lose_score;
 };
 
 //fxn headers:...

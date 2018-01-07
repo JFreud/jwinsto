@@ -9,6 +9,10 @@ void prompt(char * message, int to_committee, int from_committee, char * type) {
   printf("%s", message);
   fgets(buffer, sizeof(buffer), stdin);
   *strchr(buffer, '\n') = 0;
+  char * tmp = strdup(buffer);
+  strcpy(buffer, type);
+  strcat(buffer, tmp);//add type to beginning
+  free(tmp);
   write(to_committee, buffer, sizeof(buffer));
   read(from_committee, buffer, sizeof(buffer));
   printf("received: [%s]\n", buffer);
@@ -26,10 +30,10 @@ int main() {
   from_committee = referee_handshake( &to_committee );
 
   while (1) {
-    prompt("Referee name: \n", to_committee, from_committee, "ref");
-    prompt("Bout winner: \n", to_committee, from_committee, "win");
-    prompt("Bout loser: \n", to_committee, from_committee, "los");
-    prompt("Winner's score: \n", to_committee, from_committee, "wsc");
-    prompt("Loser's score: \n", to_committee, from_committee, "lsc");
+    prompt("Referee name: \n", to_committee, from_committee, "ref:");
+    prompt("Bout winner: \n", to_committee, from_committee, "win:");
+    prompt("Bout loser: \n", to_committee, from_committee, "los:");
+    prompt("Winner's score: \n", to_committee, from_committee, "wsc:");
+    prompt("Loser's score: \n", to_committee, from_committee, "lsc:");
   }
 }
