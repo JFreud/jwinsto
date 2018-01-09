@@ -1,7 +1,6 @@
 #include "network.h"
 
 
-//copy paste from pipe_networking
 int main(int argc, char **argv) {
 
   int committee_socket;

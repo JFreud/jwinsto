@@ -1,23 +1,6 @@
 #include "network.h"
 
-/*=========================
-  committee_setup
-  args:
-  creates the WKP (upstream) and opens it, waiting for a
-  connection.
-  removes the WKP once a connection has been made
-  returns the file descriptor for the upstream pipe.
-  =========================*/
-// int committee_setup() {
-//   int from_referee;
-//   mkfifo("luigi", 0600);
-//   printf("[committee] handshake: making wkp\n");
-//   from_referee = open( "luigi", O_RDONLY, 0);
-//   // read(from_referee, buffer, sizeof(buffer));
-//   remove("luigi");
-//   printf("[committee] handshake: removed wkp\n");
-//   return from_referee;
-// }
+
 
 int committee_setup() {
   int sd, i;
@@ -36,28 +19,6 @@ int committee_setup() {
 }
 
 
-
-
-// /*=========================
-//   committee_connect
-//   args: int from_referee
-//   handles the subcommittee portion of the 3 way handshake
-//   returns the file descriptor for the downstream pipe.
-//   =========================*/
-// int committee_connect(int from_referee) {
-//   char buffer[HANDSHAKE_BUFFER_SIZE];
-//   read(from_referee, buffer, sizeof(buffer));
-//   printf("[committee] handshake: received [%s]\n", buffer);
-//
-//   int to_referee;
-//   to_referee = open(buffer, O_WRONLY, 0);
-//   write(to_referee, buffer, sizeof(buffer));
-//
-//   read(from_referee, buffer, sizeof(buffer));
-//   printf("[committee] handshake received: %s\n", buffer);
-//
-//   return to_referee;
-// }
 
 int committee_connect(int sd) {
   int to_client;
