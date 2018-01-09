@@ -41,6 +41,7 @@ void subcommittee(int client_socket) {
   struct bout bout_array[1000];//is this the number of bouts?
   int bout_count = 0;
 
+
   while(read(client_socket, buffer, sizeof(buffer))) { //read from client stream
     char * input = strdup(buffer);
     char * type = strsep(&input, ":");

@@ -15,6 +15,11 @@ Displays the prompt, takes the appropriate input, sends it to the bout committee
 void prompt(char * message, int committee_socket, char * type) {// modular design! Takes input and sends it to server.
 
   char buffer[BUFFER_SIZE];
+  struct sembuf semtake = {.sem_num = 0, .sem_op = -1, .sem_flg = SEM_UNDO}; //init struct for taking spot
+  struct sembuf semrelease = {.sem_num = 0, .sem_op = 1, .sem_flg = SEM_UNDO}; //init struct for giving up spot
+  int retval; //semop return value
+  int semid = semget(KEY, 1, 0); //get semaphore
+  semop(semid, &semtake, 1); //decrease semaphore before accessing resources
 
   printf("%s", message); //prompt for input
   fgets(buffer, sizeof(buffer), stdin); //takes input
@@ -23,9 +28,13 @@ void prompt(char * message, int committee_socket, char * type) {// modular desig
   strcpy(buffer, type);
   strcat(buffer, tmp);//add type to beginning
   free(tmp); //concats to add the info type to the beginning (e.g. ref, win, los...)
+
+
   write(committee_socket, buffer, sizeof(buffer)); //writes to socket
   read(committee_socket, buffer, sizeof(buffer)); //reads received value from socket
   printf("received: [%s]\n", buffer);
+
+  semop(semid, &semrelease, 1); //increase semaphore when finished
 }
 
 
@@ -37,10 +46,25 @@ int main(int argc, char **argv) {
   int committee_socket; //listening server stream socket
   char buffer[BUFFER_SIZE];
 
+  union semun argument;
+
   if (argc == 2) //if there's an address specified in the run command
     committee_socket = client_setup(argv[1]); //connect socket to that address
   else
     committee_socket = client_setup(LOOPBACK); //if no address specified, connect to itself using loopback address
+
+  int semid = semget(KEY, 1, IPC_CREAT | 0666); //create semaphore
+  if (semid < 0) { //if it returned -1
+    printf("%s\n", strerror(errno)); //print error
+    exit(1); //quit
+  }
+  argument.val = 1;
+  if (semctl(semid, 0, SETVAL, argument) < 0) { //set value of semaphore 0 with semid to 1
+    printf("Error: %s\n", strerror(errno)); //if it returned -1
+    exit(1); //quit
+  }
+
+
 
   while (1) {
     prompt("Referee name: \n", committee_socket, "ref:"); //prompt referee name
