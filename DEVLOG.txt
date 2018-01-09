@@ -1,0 +1,35 @@
+Fencing Tournament Management Software Devlog
+Max Chan, Jerome Freudenberg
+Systems with Mr. DW Period 4
+
+
+____
+/___/
+|     _______
+|  ,-'       `-,
+| /             \
+|`|   __/| |\__   |
+|]|_______________|
+| ||___       ___||
+| |    `-. .-'    |
+\`-,    | |    ,-'
+ |  \   | |   /  |
+ |   \  | |  /   |
+ |    | | | |    |
+ |,_  | | | |  _,|
+    `-|_|-|_|-'
+
+
+*ascii art stolen
+
+freudenbergJ -- 2018-01-04 15:31:30
+added handshake
+moved around variables to make sense in the context of the project
+
+freudenbergJ -- 2018-01-07 13:11:42
+created bout struct
+made bout committee place referee input go into said struct
+
+freudenbergJ -- 2018-01-08 19:40:13
+changed the handshake to networking
+added descriptive, explanatory comments to code
