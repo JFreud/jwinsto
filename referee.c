@@ -2,7 +2,7 @@
 
 
 
-void prompt(char * message, int to_committee, int from_committee, char * type) {
+void prompt(char * message, int committee_socket, char * type) {
 
   char buffer[BUFFER_SIZE];
 
@@ -13,8 +13,8 @@ void prompt(char * message, int to_committee, int from_committee, char * type) {
   strcpy(buffer, type);
   strcat(buffer, tmp);//add type to beginning
   free(tmp);
-  write(to_committee, buffer, sizeof(buffer));
-  read(from_committee, buffer, sizeof(buffer));
+  write(committee_socket, buffer, sizeof(buffer));
+  read(committee_socket, buffer, sizeof(buffer));
   printf("received: [%s]\n", buffer);
 }
 
@@ -22,18 +22,21 @@ void prompt(char * message, int to_committee, int from_committee, char * type) {
 
 
 //copy paste from pipe_networking
-int main() {
+int main(int argc, char **argv) {
 
-  int to_committee;
-  int from_committee;
+  int committee_socket;
   char buffer[BUFFER_SIZE];
-  from_committee = referee_handshake( &to_committee );
+
+  if (argc == 2)
+    committee_socket = client_setup(argv[1]);
+  else
+    committee_socket = client_setup(LOOPBACK);
 
   while (1) {
-    prompt("Referee name: \n", to_committee, from_committee, "ref:");
-    prompt("Bout winner: \n", to_committee, from_committee, "win:");
-    prompt("Bout loser: \n", to_committee, from_committee, "los:");
-    prompt("Winner's score: \n", to_committee, from_committee, "wsc:");
-    prompt("Loser's score: \n", to_committee, from_committee, "lsc:");
+    prompt("Referee name: \n", committee_socket, "ref:");
+    prompt("Bout winner: \n", committee_socket, "win:");
+    prompt("Bout loser: \n", committee_socket, "los:");
+    prompt("Winner's score: \n", committee_socket, "wsc:");
+    prompt("Loser's score: \n", committee_socket, "lsc:");
   }
 }

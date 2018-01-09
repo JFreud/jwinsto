@@ -1,6 +1,5 @@
 #include "network.h"
 
-void process(char *s);
 void subcommittee(int from_client);
 
 static void sighandler(int signo) {
@@ -11,18 +10,18 @@ static void sighandler(int signo) {
 }
 
 int main() {
+
+  signal(SIGINT, sighandler);
+  int listen_socket = committee_setup();
+
   while (1) {
-    signal(SIGINT, sighandler);
-    int from_client;
-    from_client = committee_setup();
-    if(from_client){
-      int f = fork();
-      if (f) {
-        printf("forked!\n");
-      } //parent
-      else {//child
-        subcommittee(from_client);
-      }
+    int client_socket = committee_connect(listen_socket);
+    if (fork()) {
+      printf("forked!\n");
+      close(client_socket);
+    } //parent
+    else {//child
+      subcommittee(client_socket);
     }
   }
 }
@@ -35,15 +34,14 @@ void print_bout(struct bout tada) {
   printf("lose_score: %d\n", tada.lose_score);
 }
 
-void subcommittee(int from_client) {
-  int to_client = committee_connect(from_client);// handshake should be finished
+void subcommittee(int client_socket) {
   char buffer[BUFFER_SIZE];
 
   struct bout this_bout;
-  struct bout bout_array[1000];
+  struct bout bout_array[1000];//is this the number of bouts?
   int bout_count = 0;
 
-  while(read(from_client, buffer, sizeof(buffer))) {
+  while(read(client_socket, buffer, sizeof(buffer))) {
     char * input = strdup(buffer);
     char * type = strsep(&input, ":");
     printf("%s\n", type);
@@ -69,14 +67,8 @@ void subcommittee(int from_client) {
       printf("Something isn't right\n");
       exit(0);
     }
-    write(to_client, buffer, sizeof(buffer));
+    write(client_socket, buffer, sizeof(buffer));
   }
+  close(client_socket);
   exit(0);
-}
-
-void process(char * s) {
-  while (*s) { //make caps
-    *s = toupper(*s);
-    s++;
-  }
 }

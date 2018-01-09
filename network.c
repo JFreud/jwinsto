@@ -8,110 +8,76 @@
   removes the WKP once a connection has been made
   returns the file descriptor for the upstream pipe.
   =========================*/
+// int committee_setup() {
+//   int from_referee;
+//   mkfifo("luigi", 0600);
+//   printf("[committee] handshake: making wkp\n");
+//   from_referee = open( "luigi", O_RDONLY, 0);
+//   // read(from_referee, buffer, sizeof(buffer));
+//   remove("luigi");
+//   printf("[committee] handshake: removed wkp\n");
+//   return from_referee;
+// }
+
 int committee_setup() {
-  int from_referee;
-  mkfifo("luigi", 0600);
-  printf("[committee] handshake: making wkp\n");
-  from_referee = open( "luigi", O_RDONLY, 0);
-  // read(from_referee, buffer, sizeof(buffer));
-  remove("luigi");
-  printf("[committee] handshake: removed wkp\n");
-  return from_referee;
+  int sd, i;
+  sd = socket(AF_INET, SOCK_STREAM, 0);
+  struct addrinfo * hints, * results;
+  hints = calloc(1, sizeof(struct addrinfo));
+  hints -> ai_family = AF_INET;
+  hints -> ai_socktype = SOCK_STREAM;
+  hints -> ai_flags = AI_PASSIVE;
+  getaddrinfo(NULL, PORT, hints, &results);
+  i = bind(sd, results -> ai_addr, results -> ai_addrlen);
+  i = listen(sd, 128);
+  free(hints);
+  freeaddrinfo(results);
+  return sd;
 }
 
 
-/*=========================
-  committee_connect
-  args: int from_referee
-  handles the subcommittee portion of the 3 way handshake
-  returns the file descriptor for the downstream pipe.
-  =========================*/
-int committee_connect(int from_referee) {
-  char buffer[HANDSHAKE_BUFFER_SIZE];
-  read(from_referee, buffer, sizeof(buffer));
-  printf("[committee] handshake: received [%s]\n", buffer);
 
-  int to_referee;
-  to_referee = open(buffer, O_WRONLY, 0);
-  write(to_referee, buffer, sizeof(buffer));
 
-  read(from_referee, buffer, sizeof(buffer));
-  printf("[committee] handshake received: %s\n", buffer);
+// /*=========================
+//   committee_connect
+//   args: int from_referee
+//   handles the subcommittee portion of the 3 way handshake
+//   returns the file descriptor for the downstream pipe.
+//   =========================*/
+// int committee_connect(int from_referee) {
+//   char buffer[HANDSHAKE_BUFFER_SIZE];
+//   read(from_referee, buffer, sizeof(buffer));
+//   printf("[committee] handshake: received [%s]\n", buffer);
+//
+//   int to_referee;
+//   to_referee = open(buffer, O_WRONLY, 0);
+//   write(to_referee, buffer, sizeof(buffer));
+//
+//   read(from_referee, buffer, sizeof(buffer));
+//   printf("[committee] handshake received: %s\n", buffer);
+//
+//   return to_referee;
+// }
 
-  return to_referee;
+int committee_connect(int sd) {
+  int to_client;
+  socklen_t sock_size;
+  struct sockaddr_storage client_socket;
+  to_client = accept(sd, (struct sockaddr *)&client_socket, &sock_size);
+  return to_client;
 }
 
-/*=========================
-  committee_handshake
-  args: int * to_referee
-  Performs the committee side pipe 3 way handshake.
-  Sets *to_referee to the file descriptor to the downstream pipe.
-  returns the file descriptor for the upstream pipe.
-  =========================*/
-int committee_handshake(int *to_referee) {
 
-  int from_referee;
-
-  char buffer[HANDSHAKE_BUFFER_SIZE];
-
-  mkfifo("luigi", 0600);
-
-  //block on open, recieve mesage
-  printf("[committee] handshake: making wkp\n");
-  from_referee = open( "luigi", O_RDONLY, 0);
-  read(from_referee, buffer, sizeof(buffer));
-  printf("[committee] handshake: received [%s]\n", buffer);
-
-  remove("luigi");
-  printf("[committee] handshake: removed wkp\n");
-
-  //connect to referee, send message
-  *to_referee = open(buffer, O_WRONLY, 0);
-  write(*to_referee, buffer, sizeof(buffer));
-
-  //read for referee
-  read(from_referee, buffer, sizeof(buffer));
-  printf("[committee] handshake received: %s\n", buffer);
-
-  return from_referee;
-}
-
-/*=========================
-  referee_handshake
-  args: int * to_committee
-  Performs the referee side pipe 3 way handshake.
-  Sets *to_committee to the file descriptor for the upstream pipe.
-  returns the file descriptor for the downstream pipe.
-  =========================*/
-int referee_handshake(int *to_committee) {
-
-  int from_committee;
-  char buffer[HANDSHAKE_BUFFER_SIZE];
-
-  //send pp name to committee
-  printf("[referee] handshake: connecting to wkp\n");
-  *to_committee = open( "luigi", O_WRONLY, 0);
-  if ( *to_committee == -1 )
-    exit(1);
-
-  //make private pipe
-  sprintf(buffer, "%d", getpid() );
-  mkfifo(buffer, 0600);
-
-  write(*to_committee, buffer, sizeof(buffer));
-
-  //open and wait for connection
-  from_committee = open(buffer, O_RDONLY, 0);
-  read(from_committee, buffer, sizeof(buffer));
-  /*validate buffer code goes here */
-  printf("[referee] handshake: received [%s]\n", buffer);
-
-  //remove pp
-  remove(buffer);
-  printf("[referee] handshake: removed pp\n");
-
-  //send ACK to committee
-  write(*to_committee, REF, sizeof(buffer));
-
-  return from_committee;
+int client_setup(char * committee) {
+  int sd, i;
+  sd = socket(AF_INET, SOCK_STREAM, 0);
+  struct addrinfo * hints, * results;
+  hints = calloc(1, sizeof(struct addrinfo));
+  hints -> ai_family = AF_INET;
+  hints -> ai_socktype = SOCK_STREAM;
+  getaddrinfo(committee, PORT, hints, &results);
+  i = connect(sd, results -> ai_addr, results -> ai_addrlen);
+  free(hints);
+  freeaddrinfo(results);
+  return sd;
 }
