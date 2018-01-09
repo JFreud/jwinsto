@@ -1,7 +1,7 @@
 #include "network.h"
 
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv) {//just like referee
 
   int committee_socket;
   char buffer[BUFFER_SIZE];
