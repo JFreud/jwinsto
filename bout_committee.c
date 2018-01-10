@@ -1,6 +1,7 @@
 #include "network.h"
 
 void subcommittee(int from_client);
+struct referee * referee_list();
 
 // static void sighandler(int signo) {
 //   if (signo == SIGINT) {// if connection is interrupted with ctrl + c
@@ -9,8 +10,58 @@ void subcommittee(int from_client);
 //   }
 // }
 
+void print_refs(struct referee * rlist) {
+  while (rlist->last_name != NULL) {
+    printf("fname: %s\n", rlist->first_name);
+    printf("lname: %s\n", rlist->last_name);
+    printf("country: %s\n", rlist->country);
+    printf("club: %s\n", rlist->club);
+    rlist++;
+  }
+}
+
+struct referee * referee_list(char * filename) {
+  int fd, nbytes, counter; //file descriptor and number of bytes read
+  char * line; //stores each line of csv
+  char * info; //stores ref info of each line of csv
+  char bufferd[BUFFER_SIZE];
+
+  fd = open(filename, O_RDONLY); //open ref list
+  nbytes = read(fd, bufferd, sizeof(bufferd)); //read ref list into buffer
+  if (nbytes < 0) { //if nbytes read returned -1
+    printf("couldn't read referee file\n");
+    printf("%s\n", strerror(errno));
+  }
+  struct referee * current = malloc(1000);//array of referee structs?
+  char * buffer = strdup(bufferd); //it wasnt working with the char []
+  line = strsep(&buffer, "\n");
+  printf("line: %s\n", line);
+  counter = 0;
+  while (strlen(line) != 0) { //go through each referee in csv
+    current[counter].last_name = strsep(&line, ",");
+    // printf("%s\n", line);
+    current[counter].first_name = strsep(&line, ",");
+    // printf("%s\n", line);
+    current[counter].country = strsep(&line, ",");
+    // printf("%s\n", line);
+    current[counter].club = strsep(&line, ",");
+    // printf("%s\n", line);
+    counter++;
+    line = strsep(&buffer, "\n");
+    //printf("%lu\n", strlen(line));
+    // printf("line end: %s\n", line);
+  }
+
+  return current;
+}
+
 int main() {
 
+
+  struct referee * refs = malloc(1000);
+
+  refs = referee_list("ref_list.csv");
+  print_refs(refs);
   // signal(SIGINT, sighandler);
   int listen_socket = committee_setup(); //creates listening socket
 
@@ -24,6 +75,8 @@ int main() {
       subcommittee(client_socket); //the forked child will deal with the client
     }
   }
+  free(refs);
+  exit(1);
 }
 
 void print_bout(struct bout tada) { //prints the bout struct

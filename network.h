@@ -39,6 +39,21 @@ struct bout {
   int lose_score;
 };
 
+struct referee {
+  char * first_name;
+  char * last_name;
+  char * country;
+  char * club;
+};
+
+struct fencer {
+  char * first_name;
+  char * last_name;
+  char * country;
+  char * club;
+  char * rating;
+};
+
 //fxn headers:...
 
 
