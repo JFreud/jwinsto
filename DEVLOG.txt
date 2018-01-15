@@ -42,3 +42,6 @@ added init file, temp csv files
 
 freudenbergJ -- 2018-01-09 21:26:33
 reads referee file and puts into struct pointer
+
+freudenbergJ -- 2018-01-15 13:22:34
+initial seeding for fencers
