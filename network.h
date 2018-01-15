@@ -39,6 +39,7 @@ struct bout {
   int lose_score;
 };
 
+
 struct referee {
   char * first_name;
   char * last_name;

@@ -53,13 +53,20 @@ int count_referees(struct referee * rlist) {
 int comp_fc(const void * a, const void * b) { //comparison operator for qsort below
   struct fencer * fencerA = (struct fencer *)a;
   struct fencer * fencerB = (struct fencer *)b;
-  printf("%c\n", fencerA->rating[0]);
+  printf("\nA: %c\n", fencerA->rating[0]);
+  printf("B: %c\n", fencerB->rating[0]);
+  printf("A v B: %d\n", fencerA->rating[0] - fencerB->rating[0]);
   int count = 1;
-  if (!strcmp(&fencerA->rating[0], &fencerB->rating[0])) { // if the same letter rating
-    while (!strcmp(&fencerA->rating[count], &fencerB->rating[count])) { //keep increasing the index until a character is different
+  if (fencerA->rating[0] - fencerB->rating[0] == 0) { // if the same letter rating
+    printf("ASAME: %c\n", fencerA->rating[2]);
+    printf("BSAME: %c\n", fencerB->rating[2]);
+    while (fencerA->rating[count] - fencerB->rating[count] == 0 && count <= 2) { //keep increasing the index until a character is different
       count++; //should only take two iterations because only two digits of year rating was earned are present
     }
-    printf("%s %s %d\n", &fencerA->rating[count], &fencerA->rating[count], strcmp(&fencerA->rating[count], &fencerB->rating[count]));
+    if (!strcmp(&fencerA->rating[count], &fencerB->rating[count])) { //while loop finished and still equal
+      return 0;
+    }
+    printf("%s %s %d\n", &fencerA->rating[count], &fencerB->rating[count], strcmp(&fencerA->rating[count], &fencerB->rating[count]));
     if (strcmp(&fencerA->rating[count], &fencerB->rating[count]) < 0) {
       return 1;
     } //multiply by -1 because higher numbers are better
@@ -82,7 +89,6 @@ void make_pools(struct fencer * fclist, struct referee * rlist) {
   qsort(fclist, n_fencers, sizeof(*fclist), comp_fc); //qsort fxn, named after quicker sort
   print_fens(fclist);
 
-  
 
 }
 
