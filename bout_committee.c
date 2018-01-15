@@ -22,8 +22,8 @@ void print_refs(struct referee * rlist) {
 }
 
 void print_fens(struct fencer * fclist) {
-  while (fclist->last_name != NULL) {
-    printf("fname: %s\n", fclist->first_name);
+  while (fclist->last_name != NULL) { //iterates through fencers by checking if last name exists
+    printf("\nfname: %s\n", fclist->first_name);
     printf("lname: %s\n", fclist->last_name);
     printf("country: %s\n", fclist->country);
     printf("club: %s\n", fclist->club);
@@ -32,6 +32,59 @@ void print_fens(struct fencer * fclist) {
   }
 }
 
+int count_fencers(struct fencer * fclist) {
+  int count = 0;
+  while (fclist->last_name != NULL) {
+    fclist++;
+    count++;
+  }
+  return count;
+}
+
+int count_referees(struct referee * rlist) {
+  int count = 0;
+    while (rlist->last_name != NULL) {
+      rlist++;
+      count++;
+    }
+    return count;
+}
+
+int comp_fc(const void * a, const void * b) { //comparison operator for qsort below
+  struct fencer * fencerA = (struct fencer *)a;
+  struct fencer * fencerB = (struct fencer *)b;
+  printf("%c\n", fencerA->rating[0]);
+  int count = 1;
+  if (!strcmp(&fencerA->rating[0], &fencerB->rating[0])) { // if the same letter rating
+    while (!strcmp(&fencerA->rating[count], &fencerB->rating[count])) { //keep increasing the index until a character is different
+      count++; //should only take two iterations because only two digits of year rating was earned are present
+    }
+    printf("%s %s %d\n", &fencerA->rating[count], &fencerA->rating[count], strcmp(&fencerA->rating[count], &fencerB->rating[count]));
+    if (strcmp(&fencerA->rating[count], &fencerB->rating[count]) < 0) {
+      return 1;
+    } //multiply by -1 because higher numbers are better
+    else {
+      return -1;
+    }
+  }
+  else {// if not the same letter rating, then the year doesn't matter:
+    return strcmp(fencerA->rating, fencerB->rating);
+  }
+}
+
+void make_pools(struct fencer * fclist, struct referee * rlist) {
+  int n_fencers = count_fencers(fclist); //count number of fencers attending
+  int n_refs = count_referees(rlist); //count number of refs available
+  int n_pools = n_fencers / 5; //approx 5 fencers per pool
+  if (n_pools > n_refs) { //if there aren't enough referees
+    n_pools = n_refs; //cut it down until one ref, one pool
+  }
+  qsort(fclist, n_fencers, sizeof(*fclist), comp_fc); //qsort fxn, named after quicker sort
+  print_fens(fclist);
+
+  
+
+}
 
 
 struct referee * referee_list(char * filename) {
@@ -95,7 +148,7 @@ struct fencer * fencer_list(char * filename) {
 
   return current;
 }
-  
+
 int main() {
 
   printf("referees: \n");
@@ -106,6 +159,7 @@ int main() {
   struct fencer * fens = malloc(1000);
   fens = fencer_list("fencer_list.csv");
   print_fens(fens);
+  make_pools(fens, refs);
   // signal(SIGINT, sighandler);
   int listen_socket = committee_setup(); //creates listening socket
 
