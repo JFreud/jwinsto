@@ -79,7 +79,7 @@ int comp_fc(const void * a, const void * b) { //comparison operator for qsort be
   }
 }
 
-void make_pools(struct fencer * fclist, struct referee * rlist) {
+struct fencer ** make_pools(struct fencer * fclist, struct referee * rlist) {
   int n_fencers = count_fencers(fclist); //count number of fencers attending
   int n_refs = count_referees(rlist); //count number of refs available
   int n_pools = n_fencers / 5; //approx 5 fencers per pool
@@ -89,7 +89,41 @@ void make_pools(struct fencer * fclist, struct referee * rlist) {
   qsort(fclist, n_fencers, sizeof(*fclist), comp_fc); //qsort fxn, named after quicker sort
   print_fens(fclist);
 
+  struct fencer ** pools = malloc(sizeof(struct fencer) * 10 * n_pools); //creates n_pools with a max of 10 fencers per pool
+  printf("HAIWD\n");
+  int pool_index = 0; //keeps track of what pool is being changed
+  int fendex = 0; //keeps track of fencer position in pool
+  int fendex_reservoir = 0; //keeps track fo what fencer we're allocating from fclist
+  printf("HAIWD\n");
+  for (; fendex < n_fencers; fendex++) { //goes through each fencer for each pool. e.g. adds a fencer 1 to every pool, then a fencer 2 to every pool
+    printf("HAIWD\n");
+    for (; pool_index < n_pools; pool_index++) {
+      printf("HAIWD\n");
+      if (fclist[fendex_reservoir].last_name == NULL) { //all fencers have been assigned to a pool
+        return pools;
+      }
+      printf("fencer: %s\n", fclist[fendex_reservoir].first_name);
+      //NEXT LINE PRONE TO SEG FAULTS
+      printf("pool byte: %lu\n", sizeof(pools[pool_index][fendex]));
+      printf("fencer byte: %lu\n", sizeof(fclist[fendex_reservoir]));
+      printf("HAI\n");
+      pools[pool_index][fendex] = fclist[fendex_reservoir]; //takes next fencer from fclist (... this will cause first pool to be better than last pool)
+      printf("HAIWD\n");
+      fendex_reservoir++;
+      printf("reservoir: %d\n", fendex_reservoir);
+    }
+  }
+  return pools;
+}
 
+void print_pools(struct fencer ** pools) {
+  int pool_num = 0;
+  while (pools != NULL) {
+    printf("\nPOOL NUMBER: %d\n", pool_num);
+    print_fens(*pools);
+    pools++;
+  }
+  free(pools);
 }
 
 
@@ -165,7 +199,8 @@ int main() {
   struct fencer * fens = malloc(1000);
   fens = fencer_list("fencer_list.csv");
   print_fens(fens);
-  make_pools(fens, refs);
+  make_pools(fens,refs);
+  // print_pools(make_pools(fens, refs));
   // signal(SIGINT, sighandler);
   int listen_socket = committee_setup(); //creates listening socket
 
