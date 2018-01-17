@@ -195,7 +195,7 @@ int main() {
   struct referee * refs = malloc(1000);
   refs = referee_list("ref_list.csv");
   print_refs(refs);
-  printf("fencers: \n");
+  printf("\nfencers: \n");
   struct fencer * fens = malloc(1000);
   fens = fencer_list("fencer_list.csv");
   print_fens(fens);
