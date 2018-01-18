@@ -107,7 +107,24 @@ struct fencer ** make_pools(struct fencer * fclist, struct referee * rlist) {
       printf("pool byte: %lu\n", sizeof(pools[pool_index][fendex]));
       printf("fencer byte: %lu\n", sizeof(fclist[fendex_reservoir]));
       printf("HAI\n");
-      pools[pool_index][fendex] = fclist[fendex_reservoir]; //takes next fencer from fclist (... this will cause first pool to be better than last pool)
+        
+        //Trying stuff
+        
+        printf("\nTESTING HERE\n");
+        
+        struct fencer temp = fclist[fendex_reservoir];
+        printf("\npool_index: %d\nfendex: %d\n", pool_index, fendex);
+        
+        *pools = &temp;
+        
+        print_fens(&pools[pool_index][fendex]);
+        printf("Can we get to here?\n");
+        
+        //Stopped trying stuff here
+        
+        //*pools[pool_index] = fclist[fendex_reservoir];
+        
+        pools[pool_index][fendex] = fclist[fendex_reservoir]; //takes next fencer from fclist (... this will cause first pool to be better than last pool)
       printf("HAIWD\n");
       fendex_reservoir++;
       printf("reservoir: %d\n", fendex_reservoir);
