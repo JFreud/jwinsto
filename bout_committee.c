@@ -96,19 +96,20 @@ struct fencer ** make_pools(struct fencer * fclist, struct referee * rlist) {
   }
 
   printf("HAIWD\n");
-  int pool_index = 0; //keeps track of what pool is being changed
+
   int fendex = 0; //keeps track of fencer position in pool
   int fendex_reservoir = 0; //keeps track fo what fencer we're allocating from fclist
   printf("HAIWD\n");
   for (; fendex < n_fencers; fendex++) { //goes through each fencer for each pool. e.g. adds a fencer 1 to every pool, then a fencer 2 to every pool
     printf("HAIWD\n");
+    int pool_index = 0; //keeps track of what pool is being changed
     for (; pool_index < n_pools; pool_index++) {
       printf("HAIWD\n");
       if (fclist[fendex_reservoir].last_name == NULL) { //all fencers have been assigned to a pool
-	 printf("\nSPRINTING POOL 1: \n"); 
+	 printf("\nSPRINTING POOL 1: \n");
         print_fens(pools[0]);
-    
-        printf("\nSPRINTING POOL 2: \n"); 
+
+        printf("\nSPRINTING POOL 2: \n");
         print_fens(pools[1]);
         return pools;
       }
@@ -117,39 +118,53 @@ struct fencer ** make_pools(struct fencer * fclist, struct referee * rlist) {
       printf("pool byte: %lu\n", sizeof(pools[pool_index][fendex]));
       printf("fencer byte: %lu\n", sizeof(fclist[fendex_reservoir]));
       printf("HAI\n");
-        
+
         //Trying stuff
-        
+
         printf("\nTESTING HERE\n");
         printf("\npool_index: %d\nfendex_reservoir: %d\nfendex: %d\n", pool_index, fendex_reservoir, fendex);
-        
+
         //pools[0][0] = &temp; //*pools = pools[0]
         print_fens(&pools[pool_index][fendex]);
-        
+
         printf("test?\n");
-        
+
         pools[pool_index][fendex] = fclist[fendex_reservoir]; //takes next fencer from fclist (... this will cause first pool to be better than last pool)
-        
+
         print_fens(pools[pool_index]);
         printf("Can we get to here?\n");
-         
+
       printf("HAIWD\n");
       fendex_reservoir++;
-      pool_index = 0;
       printf("reservoir: %d\n", fendex_reservoir);
     }
       printf("fendex: %d\n", fendex);
   }
-    
+
     printf("n_pools: %d\n", n_pools);
-    
-    printf("\nPRINTING POOL 1: \n"); 
+
+    printf("\nPRINTING POOL 1: \n");
     print_fens(pools[0]);
-    
-    printf("\nPRINTING POOL 2: \n"); 
+
+    printf("\nPRINTING POOL 2: \n");
     print_fens(pools[1]);
   return pools;
 }
+
+// void do_bout(bout chosen)
+//
+//
+// prompt score
+// receive score
+// return score
+//
+// void do_pool():
+// ordered bout array depending on people;
+// connect referee
+// chosen bout
+// prompt bouts
+// receive bout chosen
+
 
 void print_pools(struct fencer ** pools) {
   int pool_num = 0;
@@ -202,14 +217,14 @@ struct fencer * fencer_list(char * filename) {
   char * line, info;
   char bufferd[BUFFER_SIZE];
   fd = open(filename, O_RDONLY); //open fencer list
-  
+
   nbytes = read(fd, bufferd, sizeof(bufferd)); //read fc list into buffer
   if (nbytes < 0) { //if nbytes read returned -1
     printf("couldn't read fencer file\n");
     printf("%s\n", strerror(errno));
   }
   struct fencer * current = malloc(1000);//array of fencer structs
-  
+
   char * buffer = strdup(bufferd);
   line = strsep(&buffer, "\n");
   counter = 0;

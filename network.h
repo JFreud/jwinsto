@@ -55,12 +55,22 @@ struct fencer {
   char * rating;
 };
 
- union semun {
-   int              val;    /* Value for SETVAL */
-   struct semid_ds *buf;    /* Buffer for IPC_STAT, IPC_SET */
-   unsigned short  *array;  /* Array for GETALL, SETALL */
-   struct seminfo  *__buf;  /* Buffer for IPC_INFO                                      (Linux specific) */
- };
+struct pool_fencer {
+  char * first_name;
+  char * last_name;
+  int victoires;
+  int ts; //touches scored
+  int tr; //touches received
+  int ind; //indicator
+  int plc; //place (in pool)
+}
+
+ // union semun {
+ //   int              val;    /* Value for SETVAL */
+ //   struct semid_ds *buf;    /* Buffer for IPC_STAT, IPC_SET */
+ //   unsigned short  *array;  /* Array for GETALL, SETALL */
+ //   struct seminfo  *__buf;  /* Buffer for IPC_INFO                                      (Linux specific) */
+ // };
 
 //fxn headers:...
 
