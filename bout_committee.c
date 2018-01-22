@@ -281,25 +281,29 @@ void print_bout(struct bout tada) { //prints the bout struct
   printf("lose_score: %d\n", tada.lose_score);
 }
 
-void subcommittee(int client_socket) {
+struct pool_fencer * subcommittee(int client_socket, struct fencer ** assigned_pool) {
   char buffer[BUFFER_SIZE];
 
-  struct bout this_bout;
-    struct bout received_bout;
+//  struct bout this_bout;
+  struct bout received_bout;
   struct bout bout_array[1000];//is this the number of bouts?
+  struct referee * ref_list = referee_list("ref_list.csv");
+  struct pool_fencer * pool = malloc(1000);
+  int num_fencers = count_fencers(assigned_pool);
   int bout_count = 0;
-    
-    
 
+  while(read(client_socket, &received_bout, sizeof(received_bout))) { //read from client stream
 
-  while(read(client_socket, received_bout, sizeof(received_bout))) { //read from client stream
-
-      char * cur_referee = received_bout -> referee;
+      char * cur_referee = received_bout.referee;
       
       int i = 0;
-      while(strcmp(referee_list[i], cur_referee) != 0){
+      
+      while(strcmp(ref_list[i].last_name, cur_referee) != 0){
           i++;
       }
+      
+      printf("%s\n", cur_referee);
+      
       
       
       /***
@@ -344,5 +348,6 @@ void subcommittee(int client_socket) {
     write(client_socket, buffer, sizeof(buffer)); //tell client what was received so it can print and user can verify
   }
   close(client_socket);
+  return pool;
   exit(0);
 }

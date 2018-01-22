@@ -60,7 +60,7 @@ struct pool_fencer {
   int tr; //touches received
   int ind; //indicator
   int plc; //place (in pool)
-}
+};
 
  // union semun {
  //   int              val;    /* Value for SETVAL */

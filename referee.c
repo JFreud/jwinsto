@@ -80,30 +80,29 @@ int main(int argc, char **argv) {
     while (1){
         
         char buffer[BUFFER_SIZE];
-        int int_buffer;
         struct bout new_bout;
         
         printf("Referee Last Name? \n");
         fgets(buffer, sizeof(buffer), stdin); //takes input
         new_bout.referee = buffer;
         
-        printf("Winner? \n");
+        printf("Winner Last Name? \n");
         fgets(buffer, sizeof(buffer), stdin); //takes input
         new_bout.winner = buffer;
         
         printf("Winner Score? \n");
-        fgets(int_buffer, sizeof(int_buffer), stdin);
-        new_bout.win_score = intbuffer;
+        fgets(buffer, sizeof(buffer), stdin);
+        new_bout.win_score = atoi(buffer);
         
-        printf("Loser?: \n");
+        printf("Loser Last Name?: \n");
         fgets(buffer, sizeof(buffer), stdin); //takes input
         new_bout.loser = buffer;
         
         printf("Loser Score? \n");
-        fgets(int_buffer, sizeof(int_buffer), stdin);
-        new_bout.lose_score = intbuffer;
+        fgets(buffer, sizeof(buffer), stdin);
+        new_bout.lose_score = atoi(buffer);
         
-        write(committee_socket, new_bout, sizeof(new_bout));
+        write(committee_socket, &new_bout, sizeof(new_bout));
         
     }
     
