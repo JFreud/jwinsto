@@ -58,12 +58,12 @@ struct fencer {
 struct pool_fencer {
   char * first_name;
   char * last_name;
-  int victoires;
+  int victories;
   int ts; //touches scored
   int tr; //touches received
   int ind; //indicator
   int plc; //place (in pool)
-}
+};
 
  // union semun {
  //   int              val;    /* Value for SETVAL */
