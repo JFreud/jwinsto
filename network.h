@@ -55,7 +55,7 @@ struct fencer {
 struct pool_fencer {
   char * first_name;
   char * last_name;
-  int victoires;
+  int victories;
   int ts; //touches scored
   int tr; //touches received
   int ind; //indicator

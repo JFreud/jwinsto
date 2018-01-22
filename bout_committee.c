@@ -151,6 +151,35 @@ struct fencer ** make_pools(struct fencer * fclist, struct referee * rlist) {
   return pools;
 }
 
+void display_pools(struct fencer ** pool, struct pool_fencer * pf) {
+  int i = 0, name_length = 0;
+  char * name = malloc(500);
+  printf("======================================================================\n");
+  struct fencer * cur_pool = pool[0];
+  for (; i < count_fencers(cur_pool); i++) {
+    //printf("first: %s size: %lu  ", cur_pool[i].first_name, strlen(cur_pool[i].first_name));
+    //printf("last: %s size: %lu", cur_pool[i].last_name, strlen(cur_pool[i].last_name));
+    name_length = strlen(cur_pool[i].first_name) + strlen(cur_pool[i].last_name);
+    printf("|| ");
+    printf("%s, ", cur_pool[i].last_name);
+    printf("%s", cur_pool[i].first_name);
+    //printf("%d", name_length);
+    for (; name_length < 30; name_length++) {//spaces end at same point
+      printf(" ");
+    }
+    printf("|");
+
+    int j = 0;
+    while(strcmp(pf[j].last_name, cur_pool[i].last_name) != 0){
+      j++;
+    }
+    printf("V: %d %%   TS: %d   TR: %d   Ind: %d   Pl: %d \n", pf[j].victories, pf[j].ts, pf[j].tr, pf[j].ind, pf[j].plc);
+
+    printf("---------------------------------------------------------------------\n");
+  }
+  free(name);
+}
+
 // void do_bout(bout chosen)
 //
 //
@@ -250,11 +279,13 @@ int main() {
   print_refs(refs);
   printf("\nfencers: \n");
   struct fencer * fens = malloc(1000);
+  struct fencer ** pools = malloc(1000);
   printf("hi\n");
   fens = fencer_list("fencer_list.csv");
   printf("hi2\n");
   print_fens(fens);
-  make_pools(fens,refs);
+  pools = make_pools(fens,refs);
+  display_pools(pools, pool_fencer);
   // print_pools(make_pools(fens, refs));
   // signal(SIGINT, sighandler);
   int listen_socket = committee_setup(); //creates listening socket
