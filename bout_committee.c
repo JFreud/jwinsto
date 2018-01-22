@@ -292,6 +292,7 @@ struct fencer * fencer_list(char * filename) {
 
 int main() {
 
+  
   printf("referees: \n");
   struct referee * refs = malloc(1000);
   refs = referee_list("ref_list.csv");

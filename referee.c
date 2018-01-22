@@ -47,6 +47,7 @@ void print_bout(struct bout tada) { //prints the bout struct
 
 
 
+
 int main(int argc, char **argv) {
 
   int committee_socket; //listening server stream socket
@@ -89,6 +90,7 @@ int main(int argc, char **argv) {
         char * tmp = strdup(buffer);
         unsigned char * data;
         struct bout new_bout;
+        signal(SIGPIPE, SIG_IGN); //ignore epipe to get rid of sigpipe
 
         printf("Referee Last Name? \n");
         fgets(buffer, sizeof(buffer), stdin); //takes input
@@ -126,8 +128,13 @@ int main(int argc, char **argv) {
         data = (unsigned char *) malloc(sizeof(new_bout));
         memcpy(data, &new_bout, sizeof(new_bout));
 
-        write(committee_socket, data, sizeof(data));
+        printf("still here 1\n");
+        if (write(committee_socket, data, sizeof(data)) < 0) {
+          printf("%s", strerror(errno));
+        }
+        printf("still here 2\n");
         read(committee_socket, data, sizeof(data));
+        printf("still here 3\n");
         printf("received\n");
         memcpy(&new_bout, data, sizeof(*data));
         print_bout(new_bout);
