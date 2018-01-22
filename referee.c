@@ -65,12 +65,55 @@ int main(int argc, char **argv) {
   }
 
 
+    /***
+    struct bout {
+  int tableau;
+  int winner_seed;
+  int loser_seed;
+  char * referee;
+  char * winner;
+  char * loser;
+  int win_score;
+  int lose_score;
+};  ***/
 
+    while (1){
+        
+        char buffer[BUFFER_SIZE];
+        int int_buffer;
+        struct bout new_bout;
+        
+        printf("Referee Last Name? \n");
+        fgets(buffer, sizeof(buffer), stdin); //takes input
+        new_bout.referee = buffer;
+        
+        printf("Winner? \n");
+        fgets(buffer, sizeof(buffer), stdin); //takes input
+        new_bout.winner = buffer;
+        
+        printf("Winner Score? \n");
+        fgets(int_buffer, sizeof(int_buffer), stdin);
+        new_bout.win_score = intbuffer;
+        
+        printf("Loser?: \n");
+        fgets(buffer, sizeof(buffer), stdin); //takes input
+        new_bout.loser = buffer;
+        
+        printf("Loser Score? \n");
+        fgets(int_buffer, sizeof(int_buffer), stdin);
+        new_bout.lose_score = intbuffer;
+        
+        write(committee_socket, new_bout, sizeof(new_bout));
+        
+    }
+    
+    
+    /***
   while (1) {
-    prompt("Referee name: \n", committee_socket, "ref:"); //prompt referee name
+    prompt("Last Name?: \n", committee_socket, "ref:"); //prompt referee name
     prompt("Bout winner: \n", committee_socket, "win:"); //prompt winner name
     prompt("Bout loser: \n", committee_socket, "los:"); //prompt loser name
     prompt("Winner's score: \n", committee_socket, "wsc:"); //prompt winner score
     prompt("Loser's score: \n", committee_socket, "lsc:"); //prompt loser score
-  }
+  }***/
 }

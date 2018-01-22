@@ -285,16 +285,42 @@ void subcommittee(int client_socket) {
   char buffer[BUFFER_SIZE];
 
   struct bout this_bout;
+    struct bout received_bout;
   struct bout bout_array[1000];//is this the number of bouts?
   int bout_count = 0;
+    
+    
 
 
-  while(read(client_socket, buffer, sizeof(buffer))) { //read from client stream
-    char * input = strdup(buffer);
+  while(read(client_socket, received_bout, sizeof(received_bout))) { //read from client stream
+
+      char * cur_referee = received_bout -> referee;
+      
+      int i = 0;
+      while(strcmp(referee_list[i], cur_referee) != 0){
+          i++;
+      }
+      
+      
+      /***
+      
+      char * input = strdup(buffer);
     char * type = strsep(&input, ":");
     printf("%s\n", type);
+      
+      
+      
     if (strcmp(type, "ref") == 0) { //if input is ref name fill out that part of bout info
-      this_bout.referee = input;
+        int i = 0;
+        while(strcmp(referee_list[i], input) != 0){
+            i++;
+        }
+        
+        buffer = pools[i]; //set buffer to the pool the ref is assigned to
+        
+        write(client_socket, buffer, sizeof(buffer)); //send pool info to ref
+        
+        //this_bout.referee = input;
     }
     else if (strcmp(type, "win") == 0) { //if input is winner name fill out that part of bout info
       this_bout.winner = input;
@@ -314,7 +340,7 @@ void subcommittee(int client_socket) {
     else { //incorrect input
       printf("Something isn't right\n");
       exit(0);
-    }
+    } ***/
     write(client_socket, buffer, sizeof(buffer)); //tell client what was received so it can print and user can verify
   }
   close(client_socket);

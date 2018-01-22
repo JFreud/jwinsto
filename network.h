@@ -29,9 +29,6 @@
 
 
 struct bout {
-  int tableau;
-  int winner_seed;
-  int loser_seed;
   char * referee;
   char * winner;
   char * loser;
