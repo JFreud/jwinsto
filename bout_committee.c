@@ -1,8 +1,25 @@
 #include "network.h"
 
-void subcommittee(int from_client);
+struct pool_fencer * subcommittee(int client_socket, struct fencer ** assigned_pool);
 struct referee * referee_list();
 struct fencer * fencer_list();
+struct pool_fencer * create(struct fencer * assigned);
+void print_refs(struct referee * rlist);
+void print_fens(struct fencer * fclist);
+int count_fencers(struct fencer * fclist);
+int count_referees(struct referee * rlist);
+int comp_fc(const void * a, const void * b);
+struct fencer ** make_pools(struct fencer * fclist, struct referee * rlist);
+void display_pools(struct pool_fencer * pf);
+void print_pools(struct fencer ** pools);
+void print_bout(struct bout tada);
+
+
+
+
+
+
+
 
 // static void sighandler(int signo) {
 //   if (signo == SIGINT) {// if connection is interrupted with ctrl + c
@@ -151,12 +168,12 @@ struct fencer ** make_pools(struct fencer * fclist, struct referee * rlist) {
   return pools;
 }
 
-void display_pools(struct fencer ** pool, struct pool_fencer * pf) {
+void display_pools(struct pool_fencer * pf) {
   int i = 0, name_length = 0;
   char * name = malloc(500);
   printf("======================================================================\n");
-  struct fencer * cur_pool = pool[0];
-  for (; i < count_fencers(cur_pool); i++) {
+  struct pool_fencer * cur_pool = pf;
+  for (; i < 5; i++) {
     //printf("first: %s size: %lu  ", cur_pool[i].first_name, strlen(cur_pool[i].first_name));
     //printf("last: %s size: %lu", cur_pool[i].last_name, strlen(cur_pool[i].last_name));
     name_length = strlen(cur_pool[i].first_name) + strlen(cur_pool[i].last_name);
@@ -177,6 +194,7 @@ void display_pools(struct fencer ** pool, struct pool_fencer * pf) {
 
     printf("---------------------------------------------------------------------\n");
   }
+  printf("\n");
   free(name);
 }
 
@@ -207,6 +225,7 @@ void print_pools(struct fencer ** pools) {
 
 
 struct referee * referee_list(char * filename) {
+
   int fd, nbytes, counter; //file descriptor and number of bytes read
   char * line; //stores each line of csv
   char * info; //stores ref info of each line of csv
@@ -237,7 +256,7 @@ struct referee * referee_list(char * filename) {
     //printf("%lu\n", strlen(line));
     // printf("line end: %s\n", line);
   }
-
+  close(fd);
   return current;
 }
 
@@ -285,7 +304,6 @@ int main() {
   printf("hi2\n");
   print_fens(fens);
   pools = make_pools(fens,refs);
-  display_pools(pools, pool_fencer);
   // print_pools(make_pools(fens, refs));
   // signal(SIGINT, sighandler);
   int listen_socket = committee_setup(); //creates listening socket
@@ -297,7 +315,7 @@ int main() {
       close(client_socket); //end connection
     } //parent
     else {//child
-      subcommittee(client_socket); //the forked child will deal with the client
+      subcommittee(client_socket, pools); //the forked child will deal with the client
     }
   }
   free(refs);
@@ -312,6 +330,27 @@ void print_bout(struct bout tada) { //prints the bout struct
   printf("lose_score: %d\n", tada.lose_score);
 }
 
+struct pool_fencer * create(struct fencer * assigned) {
+
+  printf("plsA !\n");
+  int num_fencers = count_fencers(assigned);
+  struct pool_fencer * pool_fencerz = malloc(1000);
+  while (assigned -> last_name != NULL) {
+    printf("pls!\n");
+    pool_fencerz->last_name = assigned->last_name;
+    pool_fencerz->first_name = assigned->first_name;
+    pool_fencerz->victories = 0;
+    pool_fencerz->ts = 0;
+    pool_fencerz->tr = 0;
+    pool_fencerz->ind = 0;
+    pool_fencerz->plc = 0;
+    pool_fencerz++;
+    assigned++;
+  }
+  printf("pls ;(\n");
+  return pool_fencerz - num_fencers;
+}
+
 struct pool_fencer * subcommittee(int client_socket, struct fencer ** assigned_pool) {
   char buffer[BUFFER_SIZE];
 
@@ -319,42 +358,102 @@ struct pool_fencer * subcommittee(int client_socket, struct fencer ** assigned_p
   struct bout received_bout;
   struct bout bout_array[1000];//is this the number of bouts?
   struct referee * ref_list = referee_list("ref_list.csv");
-  struct pool_fencer * pool = malloc(1000);
-  int num_fencers = count_fencers(assigned_pool);
+  struct fencer * real_assigned_pool = malloc(1000);
   int bout_count = 0;
+
+  print_refs(ref_list);
+  printf("ho\n");
+  read(client_socket, buffer, sizeof(received_bout));
+  memcpy(&received_bout, buffer, sizeof(received_bout));
+  write(client_socket, buffer, sizeof(received_bout));
+  printf("ho\n");
+  printf("name: %s\n", received_bout.winner);
+  print_bout(received_bout);
+  char * cur_referee = received_bout.referee;
+  printf("%s\n", received_bout.referee);
+  int i = 0;
+  while(strcmp(ref_list[i].last_name, cur_referee) != 0){
+      printf("%s\n", ref_list[i].last_name);
+      printf("%s\n", cur_referee);
+      i++;
+  }
+  printf("ho\n");
+  real_assigned_pool = assigned_pool[i];
+  printf("ho\n");
+  int num_fencers = count_fencers(real_assigned_pool);
+  printf("%s\n", cur_referee);
+
+  printf("OOps\n");
+  struct pool_fencer * pool = malloc(1000);
+  pool = create(real_assigned_pool);
+
+  printf("Opa\n");
+
+  int j = 0;
+  while(strcmp(real_assigned_pool[j].last_name, received_bout.winner) != 0) {
+    j++;
+  }
+  pool[j].victories++;
+  pool[j].ts += received_bout.win_score;
+  pool[j].tr += received_bout.lose_score;
+  pool[j].ind = pool[j].ts - pool[j].tr;
+
+  printf("Opa\n");
+
+  j = 0;
+  while(strcmp(real_assigned_pool[j].last_name, received_bout.loser) != 0) {
+    j++;
+  }
+  pool[j].ts += received_bout.lose_score;
+  pool[j].tr += received_bout.win_score;
+  pool[j].ind = pool[j].ts - pool[j].tr;
+
+  printf("Opa\n");
+
+  display_pools(pool);
+
+  printf("Opa\n");
+
 
   while(read(client_socket, &received_bout, sizeof(received_bout))) { //read from client stream
 
-      char * cur_referee = received_bout.referee;
-      
-      int i = 0;
-      
-      while(strcmp(ref_list[i].last_name, cur_referee) != 0){
-          i++;
-      }
-      
-      printf("%s\n", cur_referee);
-      
-      
-      
+    j = 0;
+    while(strcmp(real_assigned_pool[j].last_name, received_bout.winner) != 0) {
+      j++;
+    }
+    pool[j].victories++;
+    pool[j].ts += received_bout.win_score;
+    pool[j].tr += received_bout.lose_score;
+    pool[j].ind = pool[j].ts - pool[j].tr;
+
+    j = 0;
+    while(strcmp(real_assigned_pool[j].last_name, received_bout.loser) != 0) {
+      j++;
+    }
+    pool[j].ts += received_bout.lose_score;
+    pool[j].tr += received_bout.win_score;
+    pool[j].ind = pool[j].ts - pool[j].tr;
+
+    display_pools(pool);
+
       /***
-      
+
       char * input = strdup(buffer);
     char * type = strsep(&input, ":");
     printf("%s\n", type);
-      
-      
-      
+
+
+
     if (strcmp(type, "ref") == 0) { //if input is ref name fill out that part of bout info
         int i = 0;
         while(strcmp(referee_list[i], input) != 0){
             i++;
         }
-        
+
         buffer = pools[i]; //set buffer to the pool the ref is assigned to
-        
+
         write(client_socket, buffer, sizeof(buffer)); //send pool info to ref
-        
+
         //this_bout.referee = input;
     }
     else if (strcmp(type, "win") == 0) { //if input is winner name fill out that part of bout info

@@ -37,7 +37,13 @@ void prompt(char * message, int committee_socket, char * type) {// modular desig
   semop(semid, &semrelease, 1); //increase semaphore when finished
 }
 
-
+void print_bout(struct bout tada) { //prints the bout struct
+  printf("Ref: %s\n", tada.referee);
+  printf("Winner: %s\n", tada.winner);
+  printf("Loser: %s\n", tada.loser);
+  printf("win_score: %d\n", tada.win_score);
+  printf("lose_score: %d\n", tada.lose_score);
+}
 
 
 
@@ -53,16 +59,16 @@ int main(int argc, char **argv) {
   else
     committee_socket = client_setup(LOOPBACK); //if no address specified, connect to itself using loopback address
 
-  int semid = semget(KEY, 1, IPC_CREAT | 0666); //create semaphore
-  if (semid < 0) { //if it returned -1
-    printf("%s\n", strerror(errno)); //print error
-    exit(1); //quit
-  }
-  argument.val = 1;
-  if (semctl(semid, 0, SETVAL, argument) < 0) { //set value of semaphore 0 with semid to 1
-    printf("Error: %s\n", strerror(errno)); //if it returned -1
-    exit(1); //quit
-  }
+  // int semid = semget(KEY, 1, IPC_CREAT | 0666); //create semaphore
+  // if (semid < 0) { //if it returned -1
+  //   printf("%s\n", strerror(errno)); //print error
+  //   exit(1); //quit
+  // }
+  // argument.val = 1;
+  // if (semctl(semid, 0, SETVAL, argument) < 0) { //set value of semaphore 0 with semid to 1
+  //   printf("Error: %s\n", strerror(errno)); //if it returned -1
+  //   exit(1); //quit
+  // }
 
 
     /***
@@ -78,35 +84,57 @@ int main(int argc, char **argv) {
 };  ***/
 
     while (1){
-        
+
         char buffer[BUFFER_SIZE];
+        char * tmp = strdup(buffer);
+        unsigned char * data;
         struct bout new_bout;
-        
+
         printf("Referee Last Name? \n");
         fgets(buffer, sizeof(buffer), stdin); //takes input
-        new_bout.referee = buffer;
-        
+        *strchr(buffer, '\n') = 0;
+        tmp = strdup(buffer);
+        new_bout.referee = tmp;
+
         printf("Winner Last Name? \n");
         fgets(buffer, sizeof(buffer), stdin); //takes input
-        new_bout.winner = buffer;
-        
+        *strchr(buffer, '\n') = 0;
+        tmp = strdup(buffer);
+        new_bout.winner = tmp;
+
         printf("Winner Score? \n");
-        fgets(buffer, sizeof(buffer), stdin);
-        new_bout.win_score = atoi(buffer);
-        
+        fgets(buffer, sizeof(buffer), stdin); //takes input
+        *strchr(buffer, '\n') = 0;
+        tmp = strdup(buffer);
+        new_bout.win_score = atoi(tmp);
+
         printf("Loser Last Name?: \n");
         fgets(buffer, sizeof(buffer), stdin); //takes input
-        new_bout.loser = buffer;
-        
+        *strchr(buffer, '\n') = 0;
+        tmp = strdup(buffer);
+        new_bout.loser = tmp;
+
         printf("Loser Score? \n");
-        fgets(buffer, sizeof(buffer), stdin);
-        new_bout.lose_score = atoi(buffer);
-        
-        write(committee_socket, &new_bout, sizeof(new_bout));
-        
+        fgets(buffer, sizeof(buffer), stdin); //takes input
+        *strchr(buffer, '\n') = 0;
+        tmp = strdup(buffer);
+        new_bout.lose_score = atoi(tmp);
+
+        printf("HAAHAHAHAA IM SENDING THIS BOUT SCORE\n");
+        print_bout(new_bout);
+
+        data = (unsigned char *) malloc(sizeof(new_bout));
+        memcpy(data, &new_bout, sizeof(new_bout));
+
+        write(committee_socket, data, sizeof(data));
+        read(committee_socket, data, sizeof(data));
+        printf("received\n");
+        memcpy(&new_bout, data, sizeof(*data));
+        print_bout(new_bout);
+
     }
-    
-    
+
+
     /***
   while (1) {
     prompt("Last Name?: \n", committee_socket, "ref:"); //prompt referee name

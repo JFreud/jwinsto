@@ -28,6 +28,7 @@ int committee_connect(int sd) {//runs accept to connect committee with client
   int to_client; //descriptor to new socket
   socklen_t sock_size; //like size_t
   struct sockaddr_storage client_socket; //
+  sock_size = sizeof(client_socket);
   to_client = accept(sd, (struct sockaddr *)&client_socket, &sock_size); //accept next client, performs server side of handshake, creates new socket for communicating with client
   return to_client; //returns new socket descriptor
 }
