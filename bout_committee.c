@@ -17,6 +17,14 @@ void print_bout(struct bout tada);
 
 
 
+static void sighandler(int signo) {
+  if (signo == SIGINT) {
+    // close(client_socket);
+    // shutdown(listen_socket, SHUT_RDWR);
+    exit(0);
+  }
+}
+
 
 
 
@@ -292,7 +300,7 @@ struct fencer * fencer_list(char * filename) {
 
 int main() {
 
-  
+  signal(SIGINT, sighandler);
   printf("referees: \n");
   struct referee * refs = malloc(1000);
   refs = referee_list("ref_list.csv");
@@ -307,9 +315,12 @@ int main() {
   pools = make_pools(fens,refs);
   // print_pools(make_pools(fens, refs));
   // signal(SIGINT, sighandler);
+  // int listen_socket = committee_setup(); //creates listening socket
+  printf("listening socket\n");
   int listen_socket = committee_setup(); //creates listening socket
 
   while (1) {
+
     int client_socket = committee_connect(listen_socket); //runs accept call to connect committee with client
     if (fork()) { //forking server!
       printf("forked!\n");

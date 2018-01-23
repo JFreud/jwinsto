@@ -45,15 +45,22 @@ void print_bout(struct bout tada) { //prints the bout struct
   printf("lose_score: %d\n", tada.lose_score);
 }
 
-
+static void sighandler(int signo) {
+  if (signo == SIGINT) {
+    // close(committee_socket);
+    exit(0);
+  }
+}
 
 
 int main(int argc, char **argv) {
 
-  int committee_socket; //listening server stream socket
+  // int committee_socket; //listening server stream socket
   char buffer[BUFFER_SIZE];
+  int committee_socket;
 
   union semun argument;
+  signal(SIGINT, sighandler);
 
   if (argc == 2) //if there's an address specified in the run command
     committee_socket = client_setup(argv[1]); //connect socket to that address
@@ -130,7 +137,7 @@ int main(int argc, char **argv) {
 
         printf("still here 1\n");
         if (write(committee_socket, data, sizeof(data)) < 0) {
-          printf("%s", strerror(errno));
+          printf("%s\n", strerror(errno));
         }
         printf("still here 2\n");
         read(committee_socket, data, sizeof(data));

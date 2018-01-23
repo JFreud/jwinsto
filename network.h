@@ -76,3 +76,4 @@ struct pool_fencer {
 int committee_setup();
 int committee_connect(int sd);
 int client_setup(char * committee);
+void exit_all(int sd);
