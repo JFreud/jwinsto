@@ -399,13 +399,13 @@ void print_bout(struct bout tada) { //prints the bout struct
   printf("lose_score: %d\n", tada.lose_score);
 }
 
-struct pool_fencer * create(struct fencer * assigned) {
+struct pool_fencer * create(struct fencer * assigned) { //create pool with pool info instead of fencer info
 
-  printf("plsA !\n");
+  // printf("plsA !\n");
   int num_fencers = count_fencers(assigned);
   struct pool_fencer * pool_fencerz = malloc(1000);
   while (assigned -> last_name != NULL) {
-    printf("pls!\n");
+    // printf("pls!\n");
     pool_fencerz->last_name = assigned->last_name;
     pool_fencerz->first_name = assigned->first_name;
     pool_fencerz->victories = 0;
@@ -416,8 +416,8 @@ struct pool_fencer * create(struct fencer * assigned) {
     pool_fencerz++;
     assigned++;
   }
-  printf("pls ;(\n");
-  return pool_fencerz - num_fencers;
+  // printf("pls ;(\n");
+  return pool_fencerz - num_fencers; //return pointer to beginning of pool
 }
 
 int compute_n_bouts(struct pool_fencer * pool) { //compute how many bouts in a pool
@@ -466,6 +466,15 @@ struct pool_fencer * subcommittee(int client_socket, struct fencer ** assigned_p
 
   struct pool_fencer * pool = malloc(1000);
   pool = create(real_assigned_pool);
+
+  if (debug == 1) {
+    pool = test_pool(pool);
+    close(client_socket);
+    free(real_assigned_pool);
+    display_pools(pool);
+    return pool;
+  }
+  printf("Not debugging\n");
 
   write(client_socket, buffer, sizeof(buffer)); //tell client what was received so it can print and user can verify
 
