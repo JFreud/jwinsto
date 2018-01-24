@@ -16,7 +16,7 @@ void print_bout(struct bout tada);
 
 
 int debug = 1; //if on uses hardcoded pool, if off will run program normally
-
+int n_pools; //num of pools created
 
 static void sighandler(int signo) {
   if (signo == SIGINT) {
@@ -130,7 +130,7 @@ int comp_fc(const void * a, const void * b) { //comparison operator for qsort be
 struct fencer ** make_pools(struct fencer * fclist, struct referee * rlist) {
   int n_fencers = count_fencers(fclist); //count number of fencers attending
   int n_refs = count_referees(rlist); //count number of refs available
-  int n_pools = n_fencers / 5; //approx 5 fencers per pool
+  n_pools = n_fencers / 5; //approx 5 fencers per pool
   if (n_pools > n_refs) { //if there aren't enough referees
     n_pools = n_refs; //cut it down until one ref, one pool
   }
@@ -351,6 +351,45 @@ struct fencer * fencer_list(char * filename) {
   return current;
 }
 
+int comp_seed(const void * a, const void * b) { //compare two pool_fencers for qsort
+  struct pool_fencer * fencerA = (struct pool_fencer *)a;
+  struct pool_fencer * fencerB = (struct pool_fencer *)b;
+  if (fencerA->victories > fencerB->victories) {
+    return -1;
+  }
+  else if (fencerA->victories < fencerB->victories) {
+    return 1;
+  }
+  else {//same number/percentage of victories
+    if (fencerA->ind >= fencerB->ind) {
+      return -1;
+    }
+    else {
+      return 1;
+    }
+  }
+}
+
+struct pool_fencer * seed(struct pool_fencer ** pools) { //return post-pool seeding of fencers
+  struct pool_fencer * seeded_fencers = malloc(1000); //one big thing
+  char * lname = malloc(50);
+  int n_fencers = 0;
+  int sfen_index = 0; //seeded fencer index
+  while (*pools != NULL) { //look at this O(n^2) magic
+    printf("\n\n=====SEEDING=====\n\n"); //go through every pool
+    n_fencers = n_fencers + count_pool(*pools);
+    while ((lname = (*pools)->last_name) != NULL) { //every fencer in the pool
+      seeded_fencers[sfen_index] = **pools;
+      sfen_index++;
+      (*pools)++;
+    }
+    pools++;
+  }
+  printf("nfencers: %d\n", n_fencers);
+  qsort(seeded_fencers, n_fencers, sizeof(*seeded_fencers), comp_seed);
+  return seeded_fencers;
+}
+
 int main() {
 
   signal(SIGINT, sighandler);
@@ -371,23 +410,35 @@ int main() {
   // int listen_socket = committee_setup(); //creates listening socket
   printf("listening socket\n");
   int listen_socket = committee_setup(); //creates listening socket
-  struct pool_fencer * single_pool = malloc(500);
   struct pool_fencer ** all_pools = malloc(1000);
+  int pool_num = 0;
+  while (pool_num <= n_pools) { //change to while not all pools filled out
 
-  while (1) { //change to while not all pools filled out
-    int pool_num;
     int client_socket = committee_connect(listen_socket); //runs accept call to connect committee with client
     if (fork()) { //forking server!
       printf("forked!\n");
       close(client_socket); //end connection
     } //parent
     else {//child
+      struct pool_fencer * single_pool = malloc(500);
       single_pool = subcommittee(client_socket, pools); //the forked child will deal with the client
+      print_pool(single_pool);
       all_pools[pool_num] = single_pool;
+      // printf("last uh name: %s\n", all_pools[pool_num]->last_name);
       pool_num++;
+      printf("line 392?\n");
+      // print_pool(all_pools[pool_num]); <----- WHY DOESN'T THIS LINE WORK??
+      printf("post-print\n");
+      struct pool_fencer * seeded = seed(all_pools);
+      printf("\n\n=======POST-POOL SEEDING======\n\n");
+      print_pool(seeded);
+      //now convert back to struct fencer ig
     }
   }
   free(refs);
+  free(fens);
+  free(pools);
+  free(all_pools);
   exit(1);
 }
 
@@ -423,10 +474,10 @@ struct pool_fencer * create(struct fencer * assigned) { //create pool with pool 
 int compute_n_bouts(struct pool_fencer * pool) { //compute how many bouts in a pool
   int n_fencers = count_pool(pool); //count fencers in pool
   printf("NFENCERS: %d\n", n_fencers);
-  printf("hola");
-  int n_bouts;
+  int n_bouts = 0;
   for (;n_fencers > 0; n_fencers--) {
-    n_bouts += (n_fencers - 1); //sum of unique individuals each fencer fences
+    printf("nf var: %d\n", n_fencers-1);
+    n_bouts = n_bouts + (n_fencers - 1); //sum of unique individuals each fencer fences
   }
   return n_bouts;
 }
@@ -472,6 +523,7 @@ struct pool_fencer * subcommittee(int client_socket, struct fencer ** assigned_p
     close(client_socket);
     free(real_assigned_pool);
     display_pools(pool);
+    printf("n_bouts: %d\n", compute_n_bouts(pool));
     return pool;
   }
   printf("Not debugging\n");
