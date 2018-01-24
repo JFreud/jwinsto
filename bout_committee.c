@@ -15,6 +15,7 @@ void print_pools(struct fencer ** pools);
 void print_bout(struct bout tada);
 
 
+int debug = 1; //if on uses hardcoded pool, if off will run program normally
 
 
 static void sighandler(int signo) {
@@ -71,6 +72,15 @@ void print_pool(struct pool_fencer * fclist) {
 }
 
 int count_fencers(struct fencer * fclist) {
+  int count = 0;
+  while (fclist->last_name != NULL) {
+    fclist++;
+    count++;
+  }
+  return count;
+}
+
+int count_pool(struct pool_fencer * fclist) {
   int count = 0;
   while (fclist->last_name != NULL) {
     fclist++;
@@ -219,19 +229,49 @@ void display_pools(struct pool_fencer * pf) {
   free(name);
 }
 
-// void do_bout(bout chosen)
-//
-//
-// prompt score
-// receive score
-// return score
-//
-// void do_pool():
-// ordered bout array depending on people;
-// connect referee
-// chosen bout
-// prompt bouts
-// receive bout chosen
+struct pool_fencer * test_pool(struct pool_fencer * pool) {
+  pool[0].first_name = "thompson";
+  pool[0].last_name = "hui";
+  pool[0].victories = 4;
+  pool[0].ts = 20;
+  pool[0].tr = 0;
+  pool[0].ind = 20;
+  pool[0].plc = 1;
+
+  pool[1].first_name = "yehia";
+  pool[1].last_name = "ellis";
+  pool[1].victories = 0;
+  pool[1].ts = 0;
+  pool[1].tr = 20;
+  pool[1].ind = -20;
+  pool[1].plc = 5;
+
+  pool[2].first_name = "alice";
+  pool[2].last_name = "liu";
+  pool[2].victories = 3;
+  pool[2].ts = 15;
+  pool[2].tr = 5;
+  pool[2].ind = 10;
+  pool[2].plc = 2;
+
+  pool[3].first_name = "benny";
+  pool[3].last_name = "he";
+  pool[3].victories = 2;
+  pool[3].ts = 10;
+  pool[3].tr = 10;
+  pool[3].ind = 0;
+  pool[3].plc = 3;
+
+  pool[4].first_name = "eric";
+  pool[4].last_name = "zhang";
+  pool[4].victories = 1;
+  pool[4].ts = 5;
+  pool[4].tr = 15;
+  pool[4].ind = -10;
+  pool[4].plc = 4;
+
+  return pool;
+}
 
 
 void print_pools(struct fencer ** pools) {
@@ -331,16 +371,20 @@ int main() {
   // int listen_socket = committee_setup(); //creates listening socket
   printf("listening socket\n");
   int listen_socket = committee_setup(); //creates listening socket
+  struct pool_fencer * single_pool = malloc(500);
+  struct pool_fencer ** all_pools = malloc(1000);
 
-  while (1) {
-
+  while (1) { //change to while not all pools filled out
+    int pool_num;
     int client_socket = committee_connect(listen_socket); //runs accept call to connect committee with client
     if (fork()) { //forking server!
       printf("forked!\n");
       close(client_socket); //end connection
     } //parent
     else {//child
-      subcommittee(client_socket, pools); //the forked child will deal with the client
+      single_pool = subcommittee(client_socket, pools); //the forked child will deal with the client
+      all_pools[pool_num] = single_pool;
+      pool_num++;
     }
   }
   free(refs);
@@ -376,9 +420,20 @@ struct pool_fencer * create(struct fencer * assigned) {
   return pool_fencerz - num_fencers;
 }
 
+int compute_n_bouts(struct pool_fencer * pool) { //compute how many bouts in a pool
+  int n_fencers = count_pool(pool); //count fencers in pool
+  printf("NFENCERS: %d\n", n_fencers);
+  printf("hola");
+  int n_bouts;
+  for (;n_fencers > 0; n_fencers--) {
+    n_bouts += (n_fencers - 1); //sum of unique individuals each fencer fences
+  }
+  return n_bouts;
+}
+
 struct pool_fencer * subcommittee(int client_socket, struct fencer ** assigned_pool) {
   char buffer[BUFFER_SIZE];
-  int j;
+  int j, n_bouts;
   struct bout received_bout;
   struct bout bout_array[1000];
   struct referee * ref_list = referee_list("ref_list.csv");
@@ -388,14 +443,6 @@ struct pool_fencer * subcommittee(int client_socket, struct fencer ** assigned_p
 
   print_refs(ref_list);
   printf("ho\n");
-  // read(client_socket, buffer, sizeof(received_bout));
-  // memcpy(&received_bout, buffer, sizeof(received_bout));
-  // write(client_socket, buffer, sizeof(received_bout));
-  // printf("ho\n");
-  // printf("name: %s\n", received_bout.winner);
-  // print_bout(received_bout);
-  // char * cur_referee = received_bout.referee;
-  // printf("%s\n", received_bout.referee);
 
   read(client_socket, buffer, sizeof(buffer));
   input = strdup(buffer);
@@ -422,30 +469,10 @@ struct pool_fencer * subcommittee(int client_socket, struct fencer ** assigned_p
 
   write(client_socket, buffer, sizeof(buffer)); //tell client what was received so it can print and user can verify
 
-  // int j = 0;
-  // while(strcmp(real_assigned_pool[j].last_name, received_bout.winner) != 0) {
-  //   j++;
-  // }
-  // pool[j].victories++;
-  // pool[j].ts += received_bout.win_score;
-  // pool[j].tr += received_bout.lose_score;
-  // pool[j].ind = pool[j].ts - pool[j].tr;
-  //
-  //
-  // j = 0;
-  // while(strcmp(real_assigned_pool[j].last_name, received_bout.loser) != 0) {
-  //   j++;
-  // }
-  // pool[j].ts += received_bout.lose_score;
-  // pool[j].tr += received_bout.win_score;
-  // pool[j].ind = pool[j].ts - pool[j].tr;
-  //
-  // printf("Opa\n");
-  //
-  // display_pools(pool);
+  n_bouts = compute_n_bouts(pool);
 
   printf("Opa\n");
-  while(read(client_socket, buffer, sizeof(buffer))) { //read from client stream
+  while(read(client_socket, buffer, sizeof(buffer)) && bout_count <= n_bouts) { //read from client stream
     received_bout.referee = referee;
     input = strdup(buffer);
     type = strsep(&input, ":");
@@ -482,6 +509,8 @@ struct pool_fencer * subcommittee(int client_socket, struct fencer ** assigned_p
       pool[j].ind = pool[j].ts - pool[j].tr;
 
       display_pools(pool);
+      printf("bout count: %d\n", bout_count);
+      printf("nbouts: %d\n", n_bouts);
     }
     else { //incorrect input
       printf("Something isn't right\n");
@@ -491,5 +520,4 @@ struct pool_fencer * subcommittee(int client_socket, struct fencer ** assigned_p
   }
   close(client_socket);
   return pool;
-  exit(0);
 }
