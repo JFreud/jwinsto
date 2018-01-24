@@ -21,7 +21,7 @@ int committee_setup() { //creates, binds listening socket
   hints -> ai_flags = AI_PASSIVE; //Use all valid addresses
   getaddrinfo(NULL, PORT, hints, &results); //allocates memory for structs
   int yes = 1;
-  setsockopt(sd, SOL_SOCKET, SO_REUSEADDR, (void*) &yes, (socklen_t) sizeof(yes));
+  setsockopt(sd, SOL_SOCKET, SO_REUSEADDR, (void*) &yes, (socklen_t) sizeof(yes)); //lets it reuse bound socket
   int i = bind(sd, results -> ai_addr, results -> ai_addrlen); //i is status of bind (0 or -1). Bind takes arguments socket descriptor, address, address length
   error_check( i, "server bind" );
   printf("[server] socket bound\n");

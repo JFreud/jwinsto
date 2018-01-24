@@ -57,6 +57,19 @@ void print_fens(struct fencer * fclist) {
   }
 }
 
+void print_pool(struct pool_fencer * fclist) {
+  while (fclist->last_name != NULL) { //iterates through fencers by checking if last name exists
+    printf("\nfname: %s\n", fclist->first_name);
+    printf("lname: %s\n", fclist->last_name);
+    printf("victories: %d\n", fclist->victories);
+    printf("ts: %d\n", fclist->ts);
+    printf("tr: %d\n", fclist->tr);
+    printf("ind: %d\n", fclist->ind);
+    printf("place: %d\n", fclist->plc);
+    fclist++;
+  }
+}
+
 int count_fencers(struct fencer * fclist) {
   int count = 0;
   while (fclist->last_name != NULL) {
@@ -365,128 +378,115 @@ struct pool_fencer * create(struct fencer * assigned) {
 
 struct pool_fencer * subcommittee(int client_socket, struct fencer ** assigned_pool) {
   char buffer[BUFFER_SIZE];
-
-//  struct bout this_bout;
+  int j;
   struct bout received_bout;
-  struct bout bout_array[1000];//is this the number of bouts?
+  struct bout bout_array[1000];
   struct referee * ref_list = referee_list("ref_list.csv");
   struct fencer * real_assigned_pool = malloc(1000);
   int bout_count = 0;
+  char * input, * type, * referee;
 
   print_refs(ref_list);
   printf("ho\n");
-  read(client_socket, buffer, sizeof(received_bout));
-  memcpy(&received_bout, buffer, sizeof(received_bout));
-  write(client_socket, buffer, sizeof(received_bout));
-  printf("ho\n");
-  printf("name: %s\n", received_bout.winner);
-  print_bout(received_bout);
-  char * cur_referee = received_bout.referee;
-  printf("%s\n", received_bout.referee);
-  int i = 0;
-  while(strcmp(ref_list[i].last_name, cur_referee) != 0){
-      printf("%s\n", ref_list[i].last_name);
-      printf("%s\n", cur_referee);
-      i++;
-  }
-  printf("ho\n");
-  real_assigned_pool = assigned_pool[i];
-  printf("ho\n");
-  int num_fencers = count_fencers(real_assigned_pool);
-  printf("%s\n", cur_referee);
+  // read(client_socket, buffer, sizeof(received_bout));
+  // memcpy(&received_bout, buffer, sizeof(received_bout));
+  // write(client_socket, buffer, sizeof(received_bout));
+  // printf("ho\n");
+  // printf("name: %s\n", received_bout.winner);
+  // print_bout(received_bout);
+  // char * cur_referee = received_bout.referee;
+  // printf("%s\n", received_bout.referee);
 
-  printf("OOps\n");
+  read(client_socket, buffer, sizeof(buffer));
+  input = strdup(buffer);
+  type = strsep(&input, ":");
+  printf("%s\n", type);
+  if (strcmp(type, "ref") == 0) { //if input is ref name fill out that part of bout info
+      int i = 0;
+      while(strcmp(ref_list[i].last_name, input) != 0){ //ALERT: WILL RUN FOREVER IF TYPO IN REF NAME
+          i++;
+      }
+      real_assigned_pool = assigned_pool[i]; //set buffer to the pool the ref is assigned to
+      referee = input;
+  }
+  else { //type != ref for some reason
+    printf("something went wrong\n");
+    printf("%s\n", strerror(errno));
+    exit(1);
+  }
+  int num_fencers = count_fencers(real_assigned_pool);
+  printf("%s\n", referee);
+
   struct pool_fencer * pool = malloc(1000);
   pool = create(real_assigned_pool);
 
+  write(client_socket, buffer, sizeof(buffer)); //tell client what was received so it can print and user can verify
+
+  // int j = 0;
+  // while(strcmp(real_assigned_pool[j].last_name, received_bout.winner) != 0) {
+  //   j++;
+  // }
+  // pool[j].victories++;
+  // pool[j].ts += received_bout.win_score;
+  // pool[j].tr += received_bout.lose_score;
+  // pool[j].ind = pool[j].ts - pool[j].tr;
+  //
+  //
+  // j = 0;
+  // while(strcmp(real_assigned_pool[j].last_name, received_bout.loser) != 0) {
+  //   j++;
+  // }
+  // pool[j].ts += received_bout.lose_score;
+  // pool[j].tr += received_bout.win_score;
+  // pool[j].ind = pool[j].ts - pool[j].tr;
+  //
+  // printf("Opa\n");
+  //
+  // display_pools(pool);
+
   printf("Opa\n");
-
-  int j = 0;
-  while(strcmp(real_assigned_pool[j].last_name, received_bout.winner) != 0) {
-    j++;
-  }
-  pool[j].victories++;
-  pool[j].ts += received_bout.win_score;
-  pool[j].tr += received_bout.lose_score;
-  pool[j].ind = pool[j].ts - pool[j].tr;
-
-  printf("Opa\n");
-
-  j = 0;
-  while(strcmp(real_assigned_pool[j].last_name, received_bout.loser) != 0) {
-    j++;
-  }
-  pool[j].ts += received_bout.lose_score;
-  pool[j].tr += received_bout.win_score;
-  pool[j].ind = pool[j].ts - pool[j].tr;
-
-  printf("Opa\n");
-
-  display_pools(pool);
-
-  printf("Opa\n");
-
-
-  while(read(client_socket, &received_bout, sizeof(received_bout))) { //read from client stream
-
-    j = 0;
-    while(strcmp(real_assigned_pool[j].last_name, received_bout.winner) != 0) {
-      j++;
-    }
-    pool[j].victories++;
-    pool[j].ts += received_bout.win_score;
-    pool[j].tr += received_bout.lose_score;
-    pool[j].ind = pool[j].ts - pool[j].tr;
-
-    j = 0;
-    while(strcmp(real_assigned_pool[j].last_name, received_bout.loser) != 0) {
-      j++;
-    }
-    pool[j].ts += received_bout.lose_score;
-    pool[j].tr += received_bout.win_score;
-    pool[j].ind = pool[j].ts - pool[j].tr;
-
-    display_pools(pool);
-
-      /***
-
-      char * input = strdup(buffer);
-    char * type = strsep(&input, ":");
+  while(read(client_socket, buffer, sizeof(buffer))) { //read from client stream
+    received_bout.referee = referee;
+    input = strdup(buffer);
+    type = strsep(&input, ":");
     printf("%s\n", type);
-
-
-
-    if (strcmp(type, "ref") == 0) { //if input is ref name fill out that part of bout info
-        int i = 0;
-        while(strcmp(referee_list[i], input) != 0){
-            i++;
-        }
-
-        buffer = pools[i]; //set buffer to the pool the ref is assigned to
-
-        write(client_socket, buffer, sizeof(buffer)); //send pool info to ref
-
-        //this_bout.referee = input;
-    }
-    else if (strcmp(type, "win") == 0) { //if input is winner name fill out that part of bout info
-      this_bout.winner = input;
-    }
-    else if (strcmp(type, "los") == 0) { //if input is loser name fill out that part of bout info
-      this_bout.loser = input;
+    if (strcmp(type, "win") == 0) { //if input is winner name fill out that part of bout info
+      received_bout.winner = input;
     }
     else if (strcmp(type, "wsc") == 0) { //if input is winner score fill out that part of bout info
-      this_bout.win_score = atoi(input);
+      received_bout.win_score = atoi(input);
     }
-    else if (strcmp(type, "lsc") == 0) { //if input is loser score fill out that part of bout info
-      this_bout.lose_score = atoi(input);
-      print_bout(this_bout);
-      bout_array[bout_count] = this_bout;
+    else if (strcmp(type, "los") == 0) { //if input is loser name fill out that part of bout info
+      received_bout.loser = input;
+    }
+    else if (strcmp(type, "lsc") == 0) { //if input is loser score fill out that part of bout info (last piece of information)
+      received_bout.lose_score = atoi(input);
+      print_bout(received_bout);
+      bout_array[bout_count] = received_bout;
       bout_count++;
+      j = 0;
+      while(strcmp(real_assigned_pool[j].last_name, received_bout.winner) != 0) {
+        j++;
+      }
+      pool[j].victories++;
+      pool[j].ts += received_bout.win_score;
+      pool[j].tr += received_bout.lose_score;
+      pool[j].ind = pool[j].ts - pool[j].tr;
+
+      j = 0;
+      while(strcmp(real_assigned_pool[j].last_name, received_bout.loser) != 0) {
+        j++;
+      }
+      pool[j].ts += received_bout.lose_score;
+      pool[j].tr += received_bout.win_score;
+      pool[j].ind = pool[j].ts - pool[j].tr;
+
+      display_pools(pool);
     }
     else { //incorrect input
       printf("Something isn't right\n");
       exit(0);
-    } ***/
+    }
     write(client_socket, buffer, sizeof(buffer)); //tell client what was received so it can print and user can verify
   }
   close(client_socket);
