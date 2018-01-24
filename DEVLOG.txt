@@ -50,3 +50,10 @@ chanM-freudenbergJ -- 2018-01-22 17:53:15
 added pool construction
 display pools
 referee passing bouts
+
+freudenbergJ -- 2018-01-24 17:48:47
+fixed up pool score tracking
+hardcode sample pool for testing purposes
+computed post pool seeding
+displayed seeding
+linked back to struct fencer to access related info

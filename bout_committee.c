@@ -370,6 +370,28 @@ int comp_seed(const void * a, const void * b) { //compare two pool_fencers for q
   }
 }
 
+struct fencer * convert_fcinfo(struct pool_fencer * seeded_fencers, struct fencer * fclist) { //convert pool_fencer back to regular struct
+  int n_fencers = count_pool(seeded_fencers);
+  struct fencer * seeded_info = malloc(1000);
+  int seed_index = 0;
+  while (seeded_fencers->last_name != NULL) {
+    int i = 0;
+    while(strcmp((*seeded_fencers).last_name, fclist[i].last_name) != 0) {//we really gotta hope fencers dont have the same last name
+      i++;
+    }
+    // printf("%s\n", (*seeded_fencers).last_name);
+    // printf("%s\n", fclist[i].last_name);
+    // if (i >= n_fencers) {
+    //   printf("ya dun goof\n");
+    //   exit(0);
+    // }
+    seeded_info[seed_index] = fclist[i];
+    seed_index++;
+    seeded_fencers++;
+  }
+  return seeded_info;
+}
+
 struct pool_fencer * seed(struct pool_fencer ** pools) { //return post-pool seeding of fencers
   struct pool_fencer * seeded_fencers = malloc(1000); //one big thing
   char * lname = malloc(50);
@@ -387,7 +409,18 @@ struct pool_fencer * seed(struct pool_fencer ** pools) { //return post-pool seed
   }
   printf("nfencers: %d\n", n_fencers);
   qsort(seeded_fencers, n_fencers, sizeof(*seeded_fencers), comp_seed);
+  free(lname);
   return seeded_fencers;
+}
+
+void print_seeding(struct fencer * seed_list) {
+  printf("Name\t\tClub\tRating\tCountry\n");
+  int count = 1;
+  while (seed_list->last_name != NULL) {
+    printf("%d. Name: %s %s\tClub: %s\tRating:%s\tCountry: %s\n", count, seed_list->first_name, seed_list->last_name, seed_list->club, seed_list->rating, seed_list->country);
+    seed_list++;
+    count++;
+  }
 }
 
 int main() {
@@ -430,8 +463,12 @@ int main() {
       // print_pool(all_pools[pool_num]); <----- WHY DOESN'T THIS LINE WORK??
       printf("post-print\n");
       struct pool_fencer * seeded = seed(all_pools);
-      printf("\n\n=======POST-POOL SEEDING======\n\n");
+      printf("\n\n=======POST-POOL SEEDING ORDER======\n\n");
       print_pool(seeded);
+      struct fencer * seeded_info = convert_fcinfo(seeded, fens);
+      printf("\n\n=======REAL SEEDING LIST=======\n\n");
+      // print_fens(seeded_info);
+      print_seeding(seeded_info);
       //now convert back to struct fencer ig
     }
   }
