@@ -295,6 +295,8 @@ struct bout * later_DEs(struct fencer * seeded_fencers){
         next->winner = seeded_fencers[z].last_name;
         next->loser = seeded_fencers[n_fencers - z - 1].last_name;
         next->referee = ref_list[referee_index % n_referees].last_name;
+        next->win_score = 0;
+        next->lose_score = 0;
         referee_index++;
             //printf("\n\nDE bout %d\n", z);
         //print_bout(*next)
@@ -770,7 +772,7 @@ struct bout * subDE(int client_socket, struct bout * curDEs) {
       int i = 0;
       while(i < n_DEs){ //ALERT: WILL RUN FOREVER IF TYPO IN REF NAME
           i++;
-          if (strcmp(curDEs[i].referee, input) != 0) {
+          if (strcmp(curDEs[i].referee, input) == 0) {
             bouts_reffed++;
             print_bout(curDEs[i]);
           }
