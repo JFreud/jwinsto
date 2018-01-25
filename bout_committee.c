@@ -15,7 +15,7 @@ void print_pools(struct fencer ** pools);
 void print_bout(struct bout tada);
 
 
-int debug = 0; //if on uses hardcoded pool, if off will run program normally
+int debug = 1; //if on uses hardcoded pool, if off will run program normally
 int n_pools; //num of pools created
 
 static void sighandler(int signo) {
@@ -236,46 +236,146 @@ void display_pools(struct pool_fencer * pf) {
   free(name);
 }
 
-struct pool_fencer * test_pool(struct pool_fencer * pool) { //so we don't have to keep adding info
+struct pool_fencer * test_pool0() { //so we don't have to keep adding info
+    struct pool_fencer * pool = malloc(1000);
   pool[0].first_name = "thompson";
   pool[0].last_name = "hui";
-  pool[0].victories = 4;
+  pool[0].victories = 5;
   pool[0].ts = 20;
   pool[0].tr = 0;
   pool[0].ind = 20;
   pool[0].plc = 1;
+    
+    pool[2].first_name = "alice";
+  pool[2].last_name = "liu";
+  pool[2].victories = 4;
+  pool[2].ts = 15;
+  pool[2].tr = 5;
+  pool[2].ind = 10;
+  pool[2].plc = 2;
+    
+    pool[3].first_name = "jerome";
+  pool[3].last_name = "freudenberg";
+  pool[3].victories = 3;
+  pool[3].ts = 10;
+  pool[3].tr = 10;
+  pool[3].ind = 0;
+  pool[3].plc = 3;
+    
+    pool[4].first_name = "max";
+  pool[4].last_name = "chan";
+  pool[4].victories = 2;
+  pool[4].ts = 5;
+  pool[4].tr = 15;
+  pool[4].ind = -10;
+  pool[4].plc = 4;
 
   pool[1].first_name = "yehia";
   pool[1].last_name = "ellis";
-  pool[1].victories = 0;
+  pool[1].victories = 1;
   pool[1].ts = 0;
   pool[1].tr = 20;
   pool[1].ind = -20;
   pool[1].plc = 5;
 
-  pool[2].first_name = "alice";
-  pool[2].last_name = "liu";
-  pool[2].victories = 3;
+  pool[5].first_name = "han";
+  pool[5].last_name = "nam";
+  pool[5].victories = 0;
+  pool[5].ts = 0;
+  pool[5].tr = 20;
+  pool[5].ind = -20;
+  pool[5].plc = 6;
+
+  return pool;
+}
+
+struct pool_fencer * test_pool1() { //so we don't have to keep adding info
+    struct pool_fencer * pool = malloc(1000);
+    
+  pool[0].first_name = "phillip";
+  pool[0].last_name = "shin";
+  pool[0].victories = 5;
+  pool[0].ts = 20;
+  pool[0].tr = 0;
+  pool[0].ind = 20;
+  pool[0].plc = 1;
+    
+    pool[2].first_name = "lauren";
+  pool[2].last_name = "kim";
+  pool[2].victories = 4;
   pool[2].ts = 15;
   pool[2].tr = 5;
   pool[2].ind = 10;
   pool[2].plc = 2;
-
-  pool[3].first_name = "benny";
-  pool[3].last_name = "he";
-  pool[3].victories = 2;
+    
+    pool[3].first_name = "sarantos";
+  pool[3].last_name = "soumakis";
+  pool[3].victories = 3;
   pool[3].ts = 10;
   pool[3].tr = 10;
   pool[3].ind = 0;
   pool[3].plc = 3;
-
-  pool[4].first_name = "eric";
-  pool[4].last_name = "zhang";
-  pool[4].victories = 1;
+    
+    pool[4].first_name = "katie";
+  pool[4].last_name = "hwang";
+  pool[4].victories = 2;
   pool[4].ts = 5;
   pool[4].tr = 15;
   pool[4].ind = -10;
   pool[4].plc = 4;
+
+  pool[1].first_name = "eric";
+  pool[1].last_name = "zhang";
+  pool[1].victories = 1;
+  pool[1].ts = 0;
+  pool[1].tr = 20;
+  pool[1].ind = -20;
+  pool[1].plc = 5;
+
+  return pool;
+}
+
+struct pool_fencer * test_pool2() { //so we don't have to keep adding info
+    struct pool_fencer * pool = malloc(1000);
+  pool[0].first_name = "rachel";
+  pool[0].last_name = "koo";
+  pool[0].victories = 5;
+  pool[0].ts = 20;
+  pool[0].tr = 0;
+  pool[0].ind = 20;
+  pool[0].plc = 1;
+    
+    pool[2].first_name = "taaseen";
+  pool[2].last_name = "ali";
+  pool[2].victories = 4;
+  pool[2].ts = 15;
+  pool[2].tr = 5;
+  pool[2].ind = 10;
+  pool[2].plc = 2;
+    
+    pool[3].first_name = "lea";
+  pool[3].last_name = "levi";
+  pool[3].victories = 3;
+  pool[3].ts = 10;
+  pool[3].tr = 10;
+  pool[3].ind = 0;
+  pool[3].plc = 3;
+    
+    pool[4].first_name = "benny";
+  pool[4].last_name = "he";
+  pool[4].victories = 2;
+  pool[4].ts = 5;
+  pool[4].tr = 15;
+  pool[4].ind = -10;
+  pool[4].plc = 4;
+
+  pool[1].first_name = "cedric";
+  pool[1].last_name = "mecke";
+  pool[1].victories = 1;
+  pool[1].ts = 0;
+  pool[1].tr = 20;
+  pool[1].ind = -20;
+  pool[1].plc = 5;
 
   return pool;
 }
@@ -460,11 +560,25 @@ int main() {
       close(client_socket); //end connection
     } //parent
     else {//child
-      struct pool_fencer * single_pool = malloc(500);
-      single_pool = subcommittee(client_socket, pools); //the forked child will deal with the client
-      print_pool(single_pool);
-      all_pools[pool_num] = single_pool;
-      // printf("last uh name: %s\n", all_pools[pool_num]->last_name);
+        if (debug == 1){
+            
+            printf("Making fake pools: \n\n");
+            
+            all_pools[0] = test_pool0();
+            all_pools[1] = test_pool1();
+            all_pools[2] = test_pool2();
+            
+            printf("Here?\n");
+            
+        }
+        
+        else{
+            struct pool_fencer * single_pool = malloc(500);
+            single_pool = subcommittee(client_socket, pools); //the forked child will deal with the client
+            print_pool(single_pool);
+            all_pools[pool_num] = single_pool;
+            // printf("last uh name: %s\n", all_pools[pool_num]->last_name);
+        }
       pool_num++;
       printf("line 392?\n");
       // print_pool(all_pools[pool_num]); <----- WHY DOESN'T THIS LINE WORK??
@@ -563,7 +677,7 @@ struct pool_fencer * subcommittee(int client_socket, struct fencer ** assigned_p
   pool = create(real_assigned_pool);
 
   if (debug == 1) {
-    pool = test_pool(pool);
+    pool = test_pool0();
     close(client_socket);
     free(real_assigned_pool);
     display_pools(pool);
