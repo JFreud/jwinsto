@@ -17,6 +17,7 @@
 #include <ctype.h>
 #include <time.h>
 #include <string.h>
+#include <math.h>
 
 #define FEN "OPA"
 #define REF "BLACK_CARD"
