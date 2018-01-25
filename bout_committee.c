@@ -202,7 +202,7 @@ struct fencer ** make_pools(struct fencer * fclist, struct referee * rlist) {
 void display_pools(struct pool_fencer * pf) {
   int i = 0, name_length = 0;
   char * name = malloc(500);
-  printf("======================================================================\n");
+  printf("==========================================================================\n");
   struct pool_fencer * cur_pool = pf;
   int n_fencers = count_pool(pf);
   for (; i < n_fencers; i++) {
@@ -222,9 +222,9 @@ void display_pools(struct pool_fencer * pf) {
     while(strcmp(pf[j].last_name, cur_pool[i].last_name) != 0){
       j++;
     }
-    printf("V: %d %%   TS: %d   TR: %d   Ind: %d   Pl: %d \n", pf[j].victories, pf[j].ts, pf[j].tr, pf[j].ind, pf[j].plc);
+    printf("V: %d %%   TS: %d   TR: %d   Ind: %d\tPl: %d \n", pf[j].victories, pf[j].ts, pf[j].tr, pf[j].ind, pf[j].plc);
 
-    printf("---------------------------------------------------------------------\n");
+    printf("--------------------------------------------------------------------------\n");
   }
   printf("\n");
   free(name);
