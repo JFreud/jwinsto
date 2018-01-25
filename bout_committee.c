@@ -154,11 +154,17 @@ struct fencer ** make_pools(struct fencer * fclist, struct referee * rlist) {
     for (; pool_index < n_pools; pool_index++) {
       printf("HAIWD\n");
       if (fclist[fendex_reservoir].last_name == NULL) { //all fencers have been assigned to a pool
-	 printf("\nSPRINTING POOL 1: \n");
-        print_fens(pools[0]);
-
-        printf("\nSPRINTING POOL 2: \n");
-        print_fens(pools[1]);
+	      // printf("\nSPRINTING POOL 1: \n");
+        // print_fens(pools[0]);
+        //
+        // printf("\nSPRINTING POOL 2: \n");
+        // print_fens(pools[1]);
+        int count = 0;
+        while (count < n_pools) {
+          printf("\nSPRINTING POOL: %d\n", count);
+          print_fens(pools[count]);
+          count++;
+        }
         return pools;
       }
       printf("fencer: %s\n", fclist[fendex_reservoir].first_name);
@@ -576,6 +582,7 @@ struct pool_fencer * subcommittee(int client_socket, struct fencer ** assigned_p
     input = strdup(buffer);
     type = strsep(&input, ":");
     printf("%s\n", type);
+    display_pools(pool);
     if (strcmp(type, "win") == 0) { //if input is winner name fill out that part of bout info
       received_bout.winner = input;
     }
