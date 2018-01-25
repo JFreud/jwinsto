@@ -570,7 +570,7 @@ struct pool_fencer * subcommittee(int client_socket, struct fencer ** assigned_p
   n_bouts = compute_n_bouts(pool);
 
   printf("Opa\n");
-  while(read(client_socket, buffer, sizeof(buffer)) && bout_count <= n_bouts) { //read from client stream
+  while(read(client_socket, buffer, sizeof(buffer)) && bout_count < n_bouts) { //read from client stream
     received_bout.referee = referee;
     input = strdup(buffer);
     type = strsep(&input, ":");
@@ -617,5 +617,6 @@ struct pool_fencer * subcommittee(int client_socket, struct fencer ** assigned_p
     write(client_socket, buffer, sizeof(buffer)); //tell client what was received so it can print and user can verify
   }
   close(client_socket);
+  printf("done with bouts\n")
   return pool;
 }
