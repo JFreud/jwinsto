@@ -232,19 +232,67 @@ void display_pools(struct pool_fencer * pf) {
 }
 
 
+int questionmark(int n){
+    
+    if(isdigit(log2((double)n) )){
+        return 1;
+    }
+    return 0;
+    
+}
+
 struct bout * first_DE(struct fencer * seeded_fencers) {
   struct bout * DE_list = malloc(1000); //list of bouts for this round of DEs
-  int n_fencers = count_fencers(seeded_fencers);
+  int n_fencers = count_fencers(seeded_fencers); //number of fencers
   int i = 0;
   while (pow(2, i) < n_fencers) {
     i++;
   }
-  int cutoff = pow(2, i-1);
-  int not_bye = (n_fencers - cutoff) * 2;
+  int cutoff = pow(2, i-1); //factor of two, less than n_fencers
+  int not_bye = (n_fencers - cutoff) * 2; 
   int bye = n_fencers - not_bye;
   printf("tableau: T%d, n_BYEs: %d\n", cutoff, bye);
+    
+    int z = 0;
+    for(; z < (n_fencers - cutoff); z++){
+        
+        struct bout * next = malloc(200);
+        next->winner = seeded_fencers[n_fencers - (not_bye) + z].last_name;
+        next->loser = seeded_fencers[n_fencers - z].last_name;
+        
+        DE_list[z] = *next;
+        
+    }
   
   return DE_list;
+}
+
+struct bout * later_DEs(struct fencer * seeded_fencers){
+    
+    struct bout * DE_list = malloc(1000);
+    struct bout * post_bye = malloc(1000);
+    struct bout * pre_bye = malloc(1000);
+    int n_fencers = count_fencers(seeded_fencers);
+    
+    if (!questionmark(n_fencers)){
+         return first_DE(seeded_fencers);
+    }
+    
+    else{
+        
+        int z = 0;
+        for(; z < n_fencers/2; z++){
+            
+        struct bout * next = malloc(200);
+        next->winner = seeded_fencers[z].last_name;
+        next->loser = seeded_fencers[n_fencers - z].last_name;
+        
+        DE_list[z] = *next;
+        }
+        
+        return DE_list;
+    }
+    
 }
 
 
