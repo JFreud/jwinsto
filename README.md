@@ -21,4 +21,4 @@ The current system the United States Fencing Association employs to transfer and
   * etc
 * Not very user friendly
 * Doesn't account for different fencing tournament forms (e.g. NACs cut off the bottom 20% before calculating DE bouts)
-* DEs won't work for any event greater than 2^9 fencers. (Which hasn't happened yet but that's what they thought with IPs)
+* (NOTE: RESOLVED) DEs won't work for any event greater than 2^12 fencers. (Which hasn't happened yet but that's what they thought with IPs)
