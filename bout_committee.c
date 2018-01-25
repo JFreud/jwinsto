@@ -643,6 +643,18 @@ int main() {
   struct pool_fencer ** all_pools = malloc(1000);
   int pool_num = 0;
   int client_socket;
+  if (debug == 1){
+
+      printf("Making fake pools: \n\n");
+
+      all_pools[0] = test_pool0();
+      all_pools[1] = test_pool1();
+      all_pools[2] = test_pool2();
+
+      printf("Here?\n");
+
+  }
+  else {
   while (pool_num <= n_pools) { //change to while not all pools filled out
 
     client_socket = committee_connect(listen_socket); //runs accept call to connect committee with client
@@ -651,28 +663,15 @@ int main() {
       close(client_socket); //end connection
     } //parent
     else {//child
-        if (debug == 1){
-
-            printf("Making fake pools: \n\n");
-
-            all_pools[0] = test_pool0();
-            all_pools[1] = test_pool1();
-            all_pools[2] = test_pool2();
-
-            printf("Here?\n");
-
-        }
-
-        else{
             struct pool_fencer * single_pool = malloc(500);
             single_pool = subcommittee(client_socket, pools); //the forked child will deal with the client
             print_pool(single_pool);
             all_pools[pool_num] = single_pool;
             // printf("last uh name: %s\n", all_pools[pool_num]->last_name);
-        }
       }
       pool_num++;
     }
+  }
   struct pool_fencer * seeded = seed(all_pools);
   printf("\n\n=======POST-POOL SEEDING ORDER======\n\n");
   print_pool(seeded);
@@ -741,22 +740,28 @@ int DE_size(struct bout * DE_list) {
 }
 
 struct bout * subDE(int client_socket, struct bout * curDEs) {
-  read(client_socket, buffer, sizeof(buffer));
-  input = strdup(buffer);
-  type = strsep(&input, ":");
-  printf("%s\n", type);
-  if (strcmp(type, "ref") == 0) { //if input is ref name fill out that part of bout info
-      int i = 0;
-      while(strcmp(curDEs[i].referee, input) != 0){ //ALERT: WILL RUN FOREVER IF TYPO IN REF NAME
-          i++;
-      }
-      referee = input;
-  }
-  else { //type != ref for some reason
-    printf("something went wrong\n");
-    printf("%s\n", strerror(errno));
-    exit(1);
-  }
+  // char buffer[BUFFER_SIZE];
+  // char * input, * type;
+  // read(client_socket, buffer, sizeof(buffer));
+  // input = strdup(buffer);
+  // type = strsep(&input, ":");
+  // printf("%s\n", type);
+  // int n_DEs = DE_size(curDEs);
+  // int bouts_reffed = 0;
+  // if (strcmp(type, "ref") == 0) { //if input is ref name fill out that part of bout info
+  //     int i = 0;
+  //     while(strcmp(curDEs[i].referee, input) != 0 && i < n_DEs){ //ALERT: WILL RUN FOREVER IF TYPO IN REF NAME
+  //         i++;
+  //     }
+  //     referee = input;
+  // }
+  // else { //type != ref for some reason
+  //   printf("something went wrong\n");
+  //   printf("%s\n", strerror(errno));
+  //   exit(1);
+  // }
+
+
   return curDEs;
 }
 
