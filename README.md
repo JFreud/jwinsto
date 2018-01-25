@@ -11,7 +11,8 @@ The current system the United States Fencing Association employs to transfer and
 2) On one shell, execute the Bout Committee entering `./committee`
 3) On a seperate shell, take the role of a referee by entering `./referee`.  Note, that you must be a registered referee on the ref list to access this.  (Referees for this tournament are aziz, nazarova, chan)
 4) Depending on status, enter either 1 or 2 for pools or DEs, respectively.
-5) You, as the referee, will be prompted to enter data for the bouts you reffed.  For convenience, change `debug` (in bout_commitee.c, line LINENUM) to 1 to have pre-set data entered for you
+5) You, as the referee, will be prompted to enter data for the bouts you reffed.  For convenience, change `debug` (in bout_commitee.c, line 21) to 1 to have pre-set data entered for you
+6) After Pools, you will receive your DE assignments, and be once again prompted to order them.  This continues until you are out of assignments, which signals the committee to give you new bouts, from the new tableau.
 
 ## Bugs and Issues
 * Very not robust
