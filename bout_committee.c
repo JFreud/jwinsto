@@ -14,6 +14,8 @@ void display_pools(struct pool_fencer * pf);
 void print_pools(struct fencer ** pools);
 void print_bout(struct bout tada);
 struct bout * subDE(int client_socket, struct bout * curDEs);
+struct bout * global_DE_list;
+void display_DEs(int num_fencers, int tab);
 
 
 int debug = 1; //if on uses hardcoded pool, if off will run program normally
@@ -265,9 +267,9 @@ struct bout * first_DE(struct fencer * seeded_fencers) {
         next->loser = seeded_fencers[n_fencers - z - 1].last_name;
         next->referee = ref_list[referee_index % n_referees].last_name;
         referee_index++;
-            printf("\n\nDE bout %d\n", z);
+            //printf("\n\nDE bout %d\n", z);
         
-        print_bout(*next);
+        //print_bout(*next);
 
         DE_list[z] = *next;
 
@@ -304,12 +306,16 @@ struct bout * later_DEs(struct fencer * seeded_fencers){
         next->loser = seeded_fencers[n_fencers - z - 1].last_name;
         next->referee = ref_list[referee_index % n_referees].last_name;
         referee_index++;
-            printf("\n\nDE bout %d\n", z);
-        print_bout(*next);
-
+            //printf("\n\nDE bout %d\n", z);
+        //print_bout(*next)
+            
         DE_list[z] = *next;
+            global_DE_list[z] = *next;
         }
 
+        
+        
+            display_DEs(n_fencers, 8);
         return DE_list;
     }
 
@@ -359,7 +365,6 @@ struct pool_fencer * test_pool0() { //so we don't have to keep adding info
   pool[1].ind = -20;
   pool[1].plc = 5;
 
-    /***
   pool[5].first_name = "han";
   pool[5].last_name = "nam";
   pool[5].victories = 0;
@@ -367,7 +372,6 @@ struct pool_fencer * test_pool0() { //so we don't have to keep adding info
   pool[5].tr = 20;
   pool[5].ind = -20;
   pool[5].plc = 6;
-  ***/
 
   return pool;
 }
@@ -630,7 +634,7 @@ void print_seeding(struct fencer * seed_list) {
 }
 
 int main() {
-
+    global_DE_list = malloc(2000);
   signal(SIGINT, sighandler);
   printf("referees: \n");
   struct referee * refs = malloc(1000);
@@ -848,4 +852,56 @@ struct pool_fencer * subcommittee(int client_socket, struct fencer ** assigned_p
   close(client_socket);
   printf("done with bouts\n");
   return pool;
+}
+
+void display_DEs(int num_fencers, int tab){
+    
+    int z = num_fencers - tab*2;
+    
+
+    
+    printf("\nTableau: %d           Tableau: %d\n\n", tab, tab/2);
+    
+    for(; tab > 0; tab--){
+    
+    
+        for (;z < pow(2, tab); z++){
+        
+            int name_length1, name_length2;
+            name_length1 = strlen(global_DE_list[z].winner);
+            if (global_DE_list[z].win_score > 9)
+                name_length1 ++;
+            name_length2 = strlen(global_DE_list[z].loser);
+            if (global_DE_list[z].lose_score > 9)
+                name_length2 ++;
+        
+            printf("---%s", global_DE_list[z].winner);
+            
+            printf("(%d)", global_DE_list[z].win_score);
+            for (; name_length1 < 13; name_length1++) {//spaces end at same point
+                printf("-");
+            }
+            printf("\\");
+            printf("\n   vs.\t\t   |---%s", global_DE_list[z].winner);
+            
+            name_length1 = strlen(global_DE_list[z].winner);
+            for (; name_length1 < 13; name_length1++) {//spaces end at same point
+                printf("-");
+            }
+            
+            printf("\n---%s", global_DE_list[z].loser);
+            
+            printf("(%d)", global_DE_list[z].lose_score);
+        
+            for (; name_length2 < 13; name_length2++) {//spaces end at same point
+            printf("-");
+            }
+            printf("/");
+            printf("\n\n");
+        
+        }
+        
+    }
+    
+    
 }
