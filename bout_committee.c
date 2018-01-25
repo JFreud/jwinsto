@@ -302,10 +302,7 @@ struct bout * later_DEs(struct fencer * seeded_fencers){
         DE_list[z] = *next;
             global_DE_list[z] = *next;
         }
-
-
-
-            display_DEs(n_fencers, 8);
+        display_DEs(n_fencers, 8);
         return DE_list;
     }
 
@@ -732,6 +729,15 @@ int compute_n_bouts(struct pool_fencer * pool) { //compute how many bouts in a p
     n_bouts = n_bouts + (n_fencers - 1); //sum of unique individuals each fencer fences
   }
   return n_bouts;
+}
+
+int DE_size(struct bout * DE_list) {
+  int size = 0;
+  while(DE_list->referee != NULL) {
+    size++;
+    DE_list++;
+  }
+  return size;
 }
 
 struct bout * subDE(int client_socket, struct bout * curDEs) {
