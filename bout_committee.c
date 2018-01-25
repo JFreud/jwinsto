@@ -13,7 +13,7 @@ struct fencer ** make_pools(struct fencer * fclist, struct referee * rlist);
 void display_pools(struct pool_fencer * pf);
 void print_pools(struct fencer ** pools);
 void print_bout(struct bout tada);
-struct bout * subDE(int client_socket, struct bout * curDEs);
+struct fencer * subDE(int client_socket, struct bout * curDEs);
 struct bout * global_DE_list;
 void display_DEs(int num_fencers, int tab);
 
@@ -681,7 +681,7 @@ int main() {
   // print_fens(seeded_info);
   print_seeding(seeded_info);
   struct bout * curDEs = later_DEs(seeded_info);
-  curDEs = subDE(client_socket, curDEs);
+  struct fencer * next_DEs = subDE(client_socket, curDEs);
   //now convert back to struct fencer ig
   free(refs);
   free(fens);
@@ -739,30 +739,56 @@ int DE_size(struct bout * DE_list) {
   return size;
 }
 
-struct bout * subDE(int client_socket, struct bout * curDEs) {
-  // char buffer[BUFFER_SIZE];
-  // char * input, * type;
-  // read(client_socket, buffer, sizeof(buffer));
-  // input = strdup(buffer);
-  // type = strsep(&input, ":");
-  // printf("%s\n", type);
-  // int n_DEs = DE_size(curDEs);
-  // int bouts_reffed = 0;
-  // if (strcmp(type, "ref") == 0) { //if input is ref name fill out that part of bout info
-  //     int i = 0;
-  //     while(strcmp(curDEs[i].referee, input) != 0 && i < n_DEs){ //ALERT: WILL RUN FOREVER IF TYPO IN REF NAME
-  //         i++;
-  //     }
-  //     referee = input;
-  // }
-  // else { //type != ref for some reason
-  //   printf("something went wrong\n");
-  //   printf("%s\n", strerror(errno));
-  //   exit(1);
-  // }
-
-
-  return curDEs;
+struct fencer * subDE(int client_socket, struct bout * curDEs) {
+  char buffer[BUFFER_SIZE];
+  char * input, * type;
+  read(client_socket, buffer, sizeof(buffer));
+  struct bout received_bout;
+  struct fencer * next_tableau;
+  struct referee this_ref;
+  input = strdup(buffer);
+  type = strsep(&input, ":");
+  printf("%s\n", type);
+  int n_DEs = DE_size(curDEs);
+  int bouts_reffed = 0;
+  int cur_reffed = 0;
+  if (strcmp(type, "ref") == 0) { //if input is ref name fill out that part of bout info
+      int i = 0;
+      while(i < n_DEs){ //ALERT: WILL RUN FOREVER IF TYPO IN REF NAME
+          i++;
+          if (strcmp(curDEs[i].referee, input) != 0) {
+            bouts_reffed++;
+          }
+      }
+      this_ref.last_name = input;
+  }
+  else { //type != ref for some reason
+    printf("something went wrong\n");
+    printf("%s\n", strerror(errno));
+    exit(1);
+  }
+  while(read(client_socket, buffer, sizeof(buffer)) && cur_reffed < bouts_reffed) {
+    received_bout.referee = this_ref.last_name;
+    input = strdup(buffer);
+    type = strsep(&input, ":");
+    printf("%s\n", type);
+    if (strcmp(type, "win") == 0) { //if input is winner name fill out that part of bout info
+      received_bout.winner = input;
+    }
+    else if (strcmp(type, "wsc") == 0) { //if input is winner score fill out that part of bout info
+      received_bout.win_score = atoi(input);
+    }
+    else if (strcmp(type, "los") == 0) { //if input is loser name fill out that part of bout info
+      received_bout.loser = input;
+    }
+    else if (strcmp(type, "lsc") == 0) { //if input is loser score fill out that part of bout info (last piece of information)
+      received_bout.lose_score = atoi(input);
+      print_bout(received_bout);
+      next_tableau[cur_reffed].last_name = received_bout.winner;
+  }
+  cur_reffed++;
+}
+  return next_tableau;
 }
 
 char * send_pool(struct pool_fencer * pool) {
