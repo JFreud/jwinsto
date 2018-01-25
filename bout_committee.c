@@ -702,7 +702,7 @@ int main() {
   free(fens);
   free(pools);
   free(all_pools);
-  exit(0);
+  while(1){}
 }
 
 void print_bout(struct bout tada) { //prints the bout struct
@@ -758,7 +758,9 @@ struct bout * subDE(int client_socket, struct bout * curDEs) {
   printf("===========SUB DE-ING=========\n");
   char buffer[BUFFER_SIZE];
   char * input, * type;
+  printf("waiting for read\n");
   read(client_socket, buffer, sizeof(buffer));
+  printf("read\n");
   struct bout received_bout;
   struct bout * next_tableau;
   struct referee this_ref;
@@ -771,11 +773,11 @@ struct bout * subDE(int client_socket, struct bout * curDEs) {
   if (strcmp(type, "ref") == 0) { //if input is ref name fill out that part of bout info
       int i = 0;
       while(i < n_DEs){ //ALERT: WILL RUN FOREVER IF TYPO IN REF NAME
-          i++;
           if (strcmp(curDEs[i].referee, input) == 0) {
             bouts_reffed++;
             print_bout(curDEs[i]);
           }
+          i++;
       }
       this_ref.last_name = input;
   }
@@ -784,6 +786,7 @@ struct bout * subDE(int client_socket, struct bout * curDEs) {
     printf("%s\n", strerror(errno));
     exit(1);
   }
+  printf("bouts assigned: %d\n", bouts_reffed);
   write(client_socket, buffer, sizeof(buffer)); //tell client what was received so it can print and user can verify
   while(read(client_socket, buffer, sizeof(buffer)) && cur_reffed < bouts_reffed) {
     received_bout.referee = this_ref.last_name;
@@ -802,7 +805,7 @@ struct bout * subDE(int client_socket, struct bout * curDEs) {
     else if (strcmp(type, "lsc") == 0) { //if input is loser score fill out that part of bout info (last piece of information)
       received_bout.lose_score = atoi(input);
       print_bout(received_bout);
-      next_tableau[cur_reffed]= received_bout;
+      next_tableau[cur_reffed] = received_bout;
       cur_reffed++;
   }
   write(client_socket, buffer, sizeof(buffer)); //tell client what was received so it can print and user can verify
