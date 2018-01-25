@@ -13,7 +13,7 @@ struct fencer ** make_pools(struct fencer * fclist, struct referee * rlist);
 void display_pools(struct pool_fencer * pf);
 void print_pools(struct fencer ** pools);
 void print_bout(struct bout tada);
-struct fencer * subDE(int client_socket, struct bout * curDEs);
+struct bout * subDE(int client_socket, struct bout * curDEs);
 struct bout * global_DE_list;
 void display_DEs(int num_fencers, int tab);
 char * send_pool(struct pool_fencer * pool);
@@ -683,7 +683,8 @@ int main() {
     //print_pool(seeded);
     send_pool(seeded);
   struct bout * curDEs = later_DEs(seeded_info);
-  struct fencer * next_DEs = subDE(client_socket, curDEs);
+  // printf("HAWIHFW\n");
+  curDEs = subDE(client_socket, curDEs);
   //now convert back to struct fencer ig
   free(refs);
   free(fens);
@@ -741,12 +742,13 @@ int DE_size(struct bout * DE_list) {
   return size;
 }
 
-struct fencer * subDE(int client_socket, struct bout * curDEs) {
+struct bout * subDE(int client_socket, struct bout * curDEs) {
+  printf("===========SUB DE-ING=========\n");
   char buffer[BUFFER_SIZE];
   char * input, * type;
   read(client_socket, buffer, sizeof(buffer));
   struct bout received_bout;
-  struct fencer * next_tableau;
+  struct bout * next_tableau;
   struct referee this_ref;
   input = strdup(buffer);
   type = strsep(&input, ":");
@@ -760,6 +762,7 @@ struct fencer * subDE(int client_socket, struct bout * curDEs) {
           i++;
           if (strcmp(curDEs[i].referee, input) != 0) {
             bouts_reffed++;
+            print_bout(curDEs[i]);
           }
       }
       this_ref.last_name = input;
@@ -769,6 +772,7 @@ struct fencer * subDE(int client_socket, struct bout * curDEs) {
     printf("%s\n", strerror(errno));
     exit(1);
   }
+  write(client_socket, buffer, sizeof(buffer)); //tell client what was received so it can print and user can verify
   while(read(client_socket, buffer, sizeof(buffer)) && cur_reffed < bouts_reffed) {
     received_bout.referee = this_ref.last_name;
     input = strdup(buffer);
@@ -786,9 +790,10 @@ struct fencer * subDE(int client_socket, struct bout * curDEs) {
     else if (strcmp(type, "lsc") == 0) { //if input is loser score fill out that part of bout info (last piece of information)
       received_bout.lose_score = atoi(input);
       print_bout(received_bout);
-      next_tableau[cur_reffed].last_name = received_bout.winner;
+      next_tableau[cur_reffed]= received_bout;
+      cur_reffed++;
   }
-  cur_reffed++;
+  write(client_socket, buffer, sizeof(buffer)); //tell client what was received so it can print and user can verify
 }
   return next_tableau;
 }
@@ -804,7 +809,7 @@ char * send_pool(struct pool_fencer * pool) {
     strcat(buffer, "\n");
       z++;
   }
-    
+
     printf("Sending: %s\n", buffer);
   return buffer;
 }
@@ -914,7 +919,7 @@ struct pool_fencer * subcommittee(int client_socket, struct fencer ** assigned_p
     write(client_socket, buffer, sizeof(buffer)); //tell client what was received so it can print and user can verify
 
   }
-  close(client_socket);
+  // close(client_socket);
   printf("done with bouts\n");
   return pool;
 }
@@ -930,7 +935,7 @@ void display_DEs(int num_fencers, int tab){
     for(; tab > 0; tab--){
 
 
-        for (;z < pow(2, tab); z++){
+        for (;z < tab; z++){
 
             int name_length1, name_length2;
             name_length1 = strlen(global_DE_list[z].winner);
