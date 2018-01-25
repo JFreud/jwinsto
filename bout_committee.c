@@ -15,7 +15,7 @@ void print_pools(struct fencer ** pools);
 void print_bout(struct bout tada);
 
 
-int debug = 0; //if on uses hardcoded pool, if off will run program normally
+int debug = 1; //if on uses hardcoded pool, if off will run program normally
 int n_pools; //num of pools created
 
 static void sighandler(int signo) {
@@ -154,11 +154,6 @@ struct fencer ** make_pools(struct fencer * fclist, struct referee * rlist) {
     for (; pool_index < n_pools; pool_index++) {
       printf("HAIWD\n");
       if (fclist[fendex_reservoir].last_name == NULL) { //all fencers have been assigned to a pool
-	      // printf("\nSPRINTING POOL 1: \n");
-        // print_fens(pools[0]);
-        //
-        // printf("\nSPRINTING POOL 2: \n");
-        // print_fens(pools[1]);
         int count = 0;
         while (count < n_pools) {
           printf("\nSPRINTING POOL: %d\n", count);
@@ -236,6 +231,14 @@ void display_pools(struct pool_fencer * pf) {
   free(name);
 }
 
+
+struct bout * make_DEs(struct fencer * seeded_fencers) {
+  struct bout * DE_list = malloc(1000); //list of bouts for this round of DEs
+  int count = 0;
+  
+}
+
+
 struct pool_fencer * test_pool(struct pool_fencer * pool) { //so we don't have to keep adding info
   pool[0].first_name = "thompson";
   pool[0].last_name = "hui";
@@ -279,6 +282,7 @@ struct pool_fencer * test_pool(struct pool_fencer * pool) { //so we don't have t
 
   return pool;
 }
+
 
 
 void print_pools(struct fencer ** pools) {
