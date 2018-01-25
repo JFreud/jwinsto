@@ -16,7 +16,7 @@ void print_bout(struct bout tada);
 struct bout * subDE(int client_socket, struct bout * curDEs);
 struct bout * global_DE_list;
 void display_DEs(int num_fencers, int tab);
-
+char * send_pool(struct pool_fencer * pool);
 
 int debug = 1; //if on uses hardcoded pool, if off will run program normally
 int n_pools; //num of pools created
@@ -680,6 +680,8 @@ int main() {
   printf("\n\n=======REAL SEEDING LIST=======\n\n");
   // print_fens(seeded_info);
   print_seeding(seeded_info);
+    //print_pool(seeded);
+    send_pool(seeded);
   struct bout * curDEs = later_DEs(seeded_info);
   curDEs = subDE(client_socket, curDEs);
   //now convert back to struct fencer ig
@@ -767,11 +769,17 @@ struct bout * subDE(int client_socket, struct bout * curDEs) {
 
 char * send_pool(struct pool_fencer * pool) {
   char * buffer = malloc(1000);
+    //printf("1\n");
   strcpy(buffer, "Fencers in your pool: \n");
-  while (pool->last_name != NULL) {
-    strcat(pool->last_name, buffer);
-    strcat("\n", buffer);
+    //printf("2\n");
+    int z = 0;
+  while (pool[z].last_name != NULL) {
+    strcat(buffer, pool[z].last_name);
+    strcat(buffer, "\n");
+      z++;
   }
+    
+    printf("Sending: %s\n", buffer);
   return buffer;
 }
 
