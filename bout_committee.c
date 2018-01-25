@@ -18,7 +18,8 @@ struct bout * global_DE_list;
 void display_DEs(int num_fencers, int tab);
 char * send_pool(struct pool_fencer * pool);
 
-int debug = 1; //if on uses hardcoded pool, if off will run program normally
+int easy_pool = 1; //if on uses hardcoded pool, if off will run program normally
+int easy_DE = 1;
 int n_pools; //num of pools created
 
 static void sighandler(int signo) {
@@ -304,7 +305,9 @@ struct bout * later_DEs(struct fencer * seeded_fencers){
         DE_list[z] = *next;
             global_DE_list[z] = *next;
         }
+        printf("ho\n");
         display_DEs(n_fencers, 8);
+        printf("hi\n");
         return DE_list;
     }
 
@@ -456,6 +459,71 @@ struct pool_fencer * test_pool2() { //so we don't have to keep adding info
   return pool;
 }
 
+struct bout * test_DE0() {
+  struct bout * DE = malloc(500);
+
+  DE[0].referee = "aziz";
+  DE[0].winner = "shin";
+  DE[0].loser = "nam";
+  DE[0].win_score = 15;
+  DE[0].lose_score = 3;
+
+  DE[1].referee = "aziz";
+  DE[1].winner = "ali";
+  DE[1].loser = "mecke";
+  DE[1].win_score = 15;
+  DE[1].lose_score = 4;
+
+  DE[2].referee = "aziz";
+  DE[2].winner = "freudenberg";
+  DE[2].loser = "chan";
+  DE[2].win_score = 15;
+  DE[2].lose_score = 14;
+
+  return DE;
+}
+
+struct bout * test_DE1() {
+  struct bout * DE = malloc(500);
+
+  DE[0].referee = "nazarova";
+  DE[0].winner = "koo";
+  DE[0].loser = "zhang";
+  DE[0].win_score = 15;
+  DE[0].lose_score = 3;
+
+  DE[1].referee = "nazarova";
+  DE[1].winner = "liu";
+  DE[1].loser = "he";
+  DE[1].win_score = 15;
+  DE[1].lose_score = 4;
+
+  DE[2].referee = "nazarova";
+  DE[2].winner = "levi";
+  DE[2].loser = "soumakis";
+  DE[2].win_score = 15;
+  DE[2].lose_score = 14;
+
+  return DE;
+}
+
+struct bout * test_DE2() {
+  struct bout * DE = malloc(500);
+
+  DE[0].referee = "chan";
+  DE[0].winner = "hui";
+  DE[0].loser = "ellis";
+  DE[0].win_score = 15;
+  DE[0].lose_score = 3;
+
+  DE[1].referee = "chan";
+  DE[1].winner = "kim";
+  DE[1].loser = "hwang";
+  DE[1].win_score = 15;
+  DE[1].lose_score = 4;
+
+  return DE;
+}
 
 
 void print_pools(struct fencer ** pools) {
@@ -632,6 +700,7 @@ struct fencer * convert_winners (struct bout ** all_filled) {
     index = 0;
     while(all_filled[bigdex][index].referee != NULL) {
       winners[index].last_name = all_filled[bigdex][index].winner;
+      printf("winner: %s\n", winners[index].last_name);
       index++;
     }
   }
@@ -662,7 +731,7 @@ int main() {
   struct pool_fencer ** all_pools = malloc(1000);
   int pool_num = 0;
   int client_socket;
-  if (debug == 1){
+  if (easy_pool == 1){
 
       printf("Making fake pools: \n\n");
 
@@ -691,6 +760,7 @@ int main() {
       pool_num++;
     }
   }
+  // display_DEs(16, 8);
   struct pool_fencer * seeded = seed(all_pools);
   printf("\n\n=======POST-POOL SEEDING ORDER======\n\n");
   print_pool(seeded);
@@ -704,21 +774,30 @@ int main() {
   // printf("hi\n");
   struct bout * curDEs = later_DEs(seeded_info);
   struct bout ** all_filled = malloc(1000);
-  int refdex = 0;
-  // printf("hi\n");
-  while (refdex < n_refs) {
-    client_socket = committee_connect(listen_socket); //runs accept call to connect committee with client
-    // printf("HAWIHFW\n");
-      if (fork()) {
-        printf("forked DE!\n");
-        close(client_socket); //end connection
-      }
-      else { //child
-        struct bout * single_filled = malloc(500);
-        single_filled = subDE(client_socket, curDEs);
-        all_filled[refdex] = single_filled;
-      }
-    refdex++;
+  if (easy_DE) {
+    all_filled[0] = test_DE0();
+    all_filled[1] = test_DE1();
+    all_filled[2] = test_DE2();
+  }
+  else {
+    int refdex = 0;
+    // printf("hi\n");
+    while (refdex < n_refs) {
+      client_socket = committee_connect(listen_socket); //runs accept call to connect committee with client
+      // printf("HAWIHFW\n");
+        if (fork()) {
+          printf("forked DE!\n");
+          close(client_socket); //end connection
+          while(1){}
+        }
+        else { //child
+          struct bout * single_filled = malloc(500);
+          single_filled = subDE(client_socket, curDEs);
+          all_filled[refdex] = single_filled;
+        }
+      printf("finished ref\n");
+      refdex++;
+    }
   }
   printf("Received all data\n");
   struct fencer * winners = convert_winners(all_filled);
@@ -900,7 +979,7 @@ struct pool_fencer * subcommittee(int client_socket, struct fencer ** assigned_p
   // strcpy(buffer, send_pool(pool));
   // write(client_socket, buffer, sizeof(buffer));
 
-  if (debug == 1) {
+  if (easy_pool == 1) {
     pool = test_pool0();
     close(client_socket);
     free(real_assigned_pool);
@@ -908,7 +987,7 @@ struct pool_fencer * subcommittee(int client_socket, struct fencer ** assigned_p
     printf("n_bouts: %d\n", compute_n_bouts(pool));
     return pool;
   }
-  printf("Not debugging\n");
+  printf("Not easy_poolging\n");
 
   write(client_socket, buffer, sizeof(buffer)); //tell client what was received so it can print and user can verify
 
@@ -977,7 +1056,7 @@ void display_DEs(int num_fencers, int tab){
 
 
 
-    printf("\nTableau: %d           Tableau: %d\n\n", tab, tab/2);
+    printf("\nTableau: %d           Tableau: %d\n\n", tab * 2, tab);
 
     for(; tab > 0; tab--){
 
