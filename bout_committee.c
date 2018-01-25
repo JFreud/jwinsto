@@ -622,6 +622,22 @@ void print_seeding(struct fencer * seed_list) {
   }
 }
 
+struct fencer * convert_winners (struct bout ** all_filled) {
+  struct fencer * winners = malloc(1000);
+  int bigdex = 0;
+  int index;
+  struct referee * refs = referee_list("ref_list.csv");
+  int n_refs = count_referees(refs);
+  for(; bigdex < n_refs; bigdex++) {
+    index = 0;
+    while(all_filled[bigdex][index].referee != NULL) {
+      winners[index].last_name = all_filled[bigdex][index].winner;
+      index++;
+    }
+  }
+  return winners;
+}
+
 int main() {
   global_DE_list = malloc(2000);
   signal(SIGINT, sighandler);
@@ -629,6 +645,7 @@ int main() {
   struct referee * refs = malloc(1000);
   refs = referee_list("ref_list.csv");
   print_refs(refs);
+  int n_refs = count_referees(refs);
   printf("\nfencers: \n");
   struct fencer * fens = malloc(1000);
   struct fencer ** pools = malloc(1000);
@@ -686,17 +703,29 @@ int main() {
     // send_pool(seeded);
   // printf("hi\n");
   struct bout * curDEs = later_DEs(seeded_info);
+  struct bout ** all_filled = malloc(1000);
+  int refdex = 0;
   // printf("hi\n");
-  client_socket = committee_connect(listen_socket); //runs accept call to connect committee with client
-  // printf("HAWIHFW\n");
-  if (fork()) {
-    printf("forked DE!\n");
-    close(client_socket); //end connection
+  while (refdex < n_refs) {
+    client_socket = committee_connect(listen_socket); //runs accept call to connect committee with client
+    // printf("HAWIHFW\n");
+      if (fork()) {
+        printf("forked DE!\n");
+        close(client_socket); //end connection
+      }
+      else { //child
+        struct bout * single_filled = malloc(500);
+        single_filled = subDE(client_socket, curDEs);
+        all_filled[refdex] = single_filled;
+      }
+    refdex++;
   }
-  else { //child
-    curDEs = subDE(client_socket, curDEs);
-    printf("hi\n");
-  }
+  printf("Received all data\n");
+  struct fencer * winners = convert_winners(all_filled);
+  printf("converted winners\n");
+  later_DEs(winners);
+  printf("later DEs\n");
+  printf("hi\n");
   //now convert back to struct fencer ig
   free(refs);
   free(fens);
@@ -757,12 +786,13 @@ int DE_size(struct bout * DE_list) {
 struct bout * subDE(int client_socket, struct bout * curDEs) {
   printf("===========SUB DE-ING=========\n");
   char buffer[BUFFER_SIZE];
-  char * input, * type;
+  char * input = malloc(100);
+  char * type = malloc(100);
   printf("waiting for read\n");
   read(client_socket, buffer, sizeof(buffer));
   printf("read\n");
   struct bout received_bout;
-  struct bout * next_tableau;
+  struct bout * next_tableau = malloc(1000);
   struct referee this_ref;
   input = strdup(buffer);
   type = strsep(&input, ":");
@@ -806,8 +836,10 @@ struct bout * subDE(int client_socket, struct bout * curDEs) {
       received_bout.lose_score = atoi(input);
       print_bout(received_bout);
       next_tableau[cur_reffed] = received_bout;
+      printf("hak\n");
       cur_reffed++;
   }
+  printf("cur reffed %d\n", cur_reffed);
   write(client_socket, buffer, sizeof(buffer)); //tell client what was received so it can print and user can verify
 }
   return next_tableau;
@@ -825,7 +857,7 @@ char * send_pool(struct pool_fencer * pool) {
       z++;
   }
 
-    printf("Sending: %s\n", buffer);
+  printf("Sending: %s\n", buffer);
   return buffer;
 }
 
