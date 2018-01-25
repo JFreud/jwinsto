@@ -15,7 +15,7 @@ void print_pools(struct fencer ** pools);
 void print_bout(struct bout tada);
 
 
-int debug = 1; //if on uses hardcoded pool, if off will run program normally
+int debug = 0; //if on uses hardcoded pool, if off will run program normally
 int n_pools; //num of pools created
 
 static void sighandler(int signo) {
@@ -204,7 +204,8 @@ void display_pools(struct pool_fencer * pf) {
   char * name = malloc(500);
   printf("======================================================================\n");
   struct pool_fencer * cur_pool = pf;
-  for (; i < 5; i++) {
+  int n_fencers = count_pool(pf);
+  for (; i < n_fencers; i++) {
     //printf("first: %s size: %lu  ", cur_pool[i].first_name, strlen(cur_pool[i].first_name));
     //printf("last: %s size: %lu", cur_pool[i].last_name, strlen(cur_pool[i].last_name));
     name_length = strlen(cur_pool[i].first_name) + strlen(cur_pool[i].last_name);
@@ -229,7 +230,7 @@ void display_pools(struct pool_fencer * pf) {
   free(name);
 }
 
-struct pool_fencer * test_pool(struct pool_fencer * pool) {
+struct pool_fencer * test_pool(struct pool_fencer * pool) { //so we don't have to keep adding info
   pool[0].first_name = "thompson";
   pool[0].last_name = "hui";
   pool[0].victories = 4;
@@ -617,6 +618,6 @@ struct pool_fencer * subcommittee(int client_socket, struct fencer ** assigned_p
     write(client_socket, buffer, sizeof(buffer)); //tell client what was received so it can print and user can verify
   }
   close(client_socket);
-  printf("done with bouts\n")
+  printf("done with bouts\n");
   return pool;
 }
