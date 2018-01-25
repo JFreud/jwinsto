@@ -521,10 +521,25 @@ struct pool_fencer * seed(struct pool_fencer ** pools) { //return post-pool seed
 }
 
 void print_seeding(struct fencer * seed_list) {
-  printf("Name\t\tClub\tRating\tCountry\n");
+  printf("   Name\t\t\t\tClub\t\tRating\t\tCountry\n");
+    printf("_______________________________________________________________________________\n");
   int count = 1;
   while (seed_list->last_name != NULL) {
-    printf("%d. Name: %s %s\tClub: %s\tRating:%s\tCountry: %s\n", count, seed_list->first_name, seed_list->last_name, seed_list->club, seed_list->rating, seed_list->country);
+      
+      int name_length;
+    name_length = strlen(seed_list->first_name) + strlen(seed_list->last_name);
+      printf("%d.", count);
+      if(count <= 9)
+          printf(" ");
+      printf(" Name: %s %s", seed_list->first_name, seed_list->last_name);
+    //printf("%d", name_length);
+    for (; name_length < 15; name_length++) {//spaces end at same point
+      printf(" ");
+    }
+    printf("\t");
+      
+      
+    printf("Club: %s\tRating:%s\tCountry: %s\n", seed_list->club, seed_list->rating, seed_list->country);
     seed_list++;
     count++;
   }
