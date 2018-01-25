@@ -151,7 +151,10 @@ int main(int argc, char **argv) {
     prompt("Last Name?: \n", committee_socket, "ref:"); //prompt referee name
     printf("Registered Ref\n");
 
-  while (1) {
+    int bout_count = 0;
+    
+  while (bout_count < 10) {
+      
     prompt("Bout winner: \n", committee_socket, "win:"); //prompt winner name
     prompt("Winner's score: \n", committee_socket, "wsc:"); //prompt winner score
     prompt("Bout loser: \n", committee_socket, "los:"); //prompt loser name
