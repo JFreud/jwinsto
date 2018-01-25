@@ -64,7 +64,7 @@ int main(int argc, char **argv) {
   int committee_socket;
 
   union semun argument;
-  signal(SIGINT, sighandler);
+  // signal(SIGINT, sighandler);
 
   if (argc == 2) //if there's an address specified in the run command
     committee_socket = client_setup(argv[1]); //connect socket to that address

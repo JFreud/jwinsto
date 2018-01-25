@@ -621,7 +621,7 @@ void print_seeding(struct fencer * seed_list) {
 }
 
 int main() {
-    global_DE_list = malloc(2000);
+  global_DE_list = malloc(2000);
   signal(SIGINT, sighandler);
   printf("referees: \n");
   struct referee * refs = malloc(1000);
@@ -681,16 +681,26 @@ int main() {
   // print_fens(seeded_info);
   print_seeding(seeded_info);
     //print_pool(seeded);
-    send_pool(seeded);
+    // send_pool(seeded);
+  // printf("hi\n");
   struct bout * curDEs = later_DEs(seeded_info);
+  // printf("hi\n");
+  client_socket = committee_connect(listen_socket); //runs accept call to connect committee with client
   // printf("HAWIHFW\n");
-  curDEs = subDE(client_socket, curDEs);
+  if (fork()) {
+    printf("forked DE!\n");
+    close(client_socket); //end connection
+  }
+  else { //child
+    curDEs = subDE(client_socket, curDEs);
+    printf("hi\n");
+  }
   //now convert back to struct fencer ig
   free(refs);
   free(fens);
   free(pools);
   free(all_pools);
-  exit(1);
+  exit(0);
 }
 
 void print_bout(struct bout tada) { //prints the bout struct
@@ -919,7 +929,7 @@ struct pool_fencer * subcommittee(int client_socket, struct fencer ** assigned_p
     write(client_socket, buffer, sizeof(buffer)); //tell client what was received so it can print and user can verify
 
   }
-  // close(client_socket);
+  close(client_socket);
   printf("done with bouts\n");
   return pool;
 }
