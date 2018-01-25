@@ -233,13 +233,16 @@ void display_pools(struct pool_fencer * pf) {
 }
 
 
-int questionmark(int n){ //this will not work for greater than 2^9 fencers
+int questionmark(int n){ //this will not work for greater than 2^12 fencers
 
-    if(isdigit(log2((double)n) )){
-        return 1;
+    int i = 0;
+    for(; i < 12; i++){
+        if(n % (int) pow(2, i) == 0){
+            return 1;
+        }
     }
-    return 0;
 
+    return 0;
 }
 
 struct bout * first_DE(struct fencer * seeded_fencers) {
@@ -252,14 +255,18 @@ struct bout * first_DE(struct fencer * seeded_fencers) {
   int cutoff = pow(2, i-1); //factor of two, less than n_fencers
   int not_bye = (n_fencers - cutoff) * 2;
   int bye = n_fencers - not_bye;
-  printf("tableau: T%d, n_BYEs: %d\n", cutoff, bye);
+  printf("tableau: T%d, #fencers: %d, cutoff: %d, not bye: %d, n_BYEs: %d\n", cutoff, n_fencers, cutoff, not_bye, bye);
 
     int z = 0;
     for(; z < (n_fencers - cutoff); z++){
+        
+        printf("Can we get here?\n");
 
         struct bout * next = malloc(200);
         next->winner = seeded_fencers[n_fencers - (not_bye) + z].last_name;
-        next->loser = seeded_fencers[n_fencers - z].last_name;
+        next->loser = seeded_fencers[n_fencers - z - 1].last_name;
+        
+        print_bout(*next);
 
         DE_list[z] = *next;
 
@@ -279,6 +286,8 @@ struct bout * later_DEs(struct fencer * seeded_fencers){
     int n_referees = count_referees(ref_list);
 
     int referee_index = 0;
+    
+    printf("testing questionmark: %d\n", questionmark(16));
 
     if (!questionmark(n_fencers)){
          return first_DE(seeded_fencers);
@@ -291,9 +300,10 @@ struct bout * later_DEs(struct fencer * seeded_fencers){
 
         struct bout * next = malloc(200);
         next->winner = seeded_fencers[z].last_name;
-        next->loser = seeded_fencers[n_fencers - z].last_name;
+        next->loser = seeded_fencers[n_fencers - z - 1].last_name;
         next->referee = ref_list[referee_index % n_referees].last_name;
         referee_index++;
+            printf("\n\nDE bout %d\n", z);
         print_bout(*next);
 
         DE_list[z] = *next;
