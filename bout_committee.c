@@ -235,14 +235,7 @@ void display_pools(struct pool_fencer * pf) {
 
 int questionmark(int n){ //this will not work for greater than 2^12 fencers
 
-    int i = 0;
-    for(; i < 12; i++){
-        if(n % (int) pow(2, i) == 0){
-            return 1;
-        }
-    }
-
-    return 0;
+    return ceil(log2(n) - floor(log2(n)));
 }
 
 struct bout * first_DE(struct fencer * seeded_fencers) {
@@ -257,14 +250,22 @@ struct bout * first_DE(struct fencer * seeded_fencers) {
   int bye = n_fencers - not_bye;
   printf("tableau: T%d, #fencers: %d, cutoff: %d, not bye: %d, n_BYEs: %d\n", cutoff, n_fencers, cutoff, not_bye, bye);
 
+    struct referee * ref_list = referee_list("ref_list.csv");
+    int n_referees = count_referees(ref_list);
+
+    int referee_index = 0;
+    
     int z = 0;
     for(; z < (n_fencers - cutoff); z++){
         
         printf("Can we get here?\n");
 
         struct bout * next = malloc(200);
-        next->winner = seeded_fencers[n_fencers - (not_bye) + z].last_name;
+        next->winner = seeded_fencers[n_fencers - (not_bye) + z ].last_name;
         next->loser = seeded_fencers[n_fencers - z - 1].last_name;
+        next->referee = ref_list[referee_index % n_referees].last_name;
+        referee_index++;
+            printf("\n\nDE bout %d\n", z);
         
         print_bout(*next);
 
@@ -289,7 +290,7 @@ struct bout * later_DEs(struct fencer * seeded_fencers){
     
     printf("testing questionmark: %d\n", questionmark(16));
 
-    if (!questionmark(n_fencers)){
+    if (questionmark(n_fencers)){
          return first_DE(seeded_fencers);
     }
 
@@ -358,6 +359,7 @@ struct pool_fencer * test_pool0() { //so we don't have to keep adding info
   pool[1].ind = -20;
   pool[1].plc = 5;
 
+    /***
   pool[5].first_name = "han";
   pool[5].last_name = "nam";
   pool[5].victories = 0;
@@ -365,6 +367,7 @@ struct pool_fencer * test_pool0() { //so we don't have to keep adding info
   pool[5].tr = 20;
   pool[5].ind = -20;
   pool[5].plc = 6;
+  ***/
 
   return pool;
 }
