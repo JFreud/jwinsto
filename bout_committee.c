@@ -617,11 +617,7 @@ struct pool_fencer * subcommittee(int client_socket, struct fencer ** assigned_p
     }
     write(client_socket, buffer, sizeof(buffer)); //tell client what was received so it can print and user can verify
   }
-<<<<<<< HEAD
   close(client_socket);
-=======
-  shutdown(client_socket, SHUT_RDWR);
->>>>>>> 4b273b8d797cb3369af33b4662cb250672d40d6c
   printf("done with bouts\n");
   return pool;
 }
