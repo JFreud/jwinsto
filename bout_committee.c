@@ -232,7 +232,7 @@ void display_pools(struct pool_fencer * pf) {
 }
 
 
-struct bout * make_DEs(struct fencer * seeded_fencers) {
+struct bout * first_DE(struct fencer * seeded_fencers) {
   struct bout * DE_list = malloc(1000); //list of bouts for this round of DEs
   int n_fencers = count_fencers(seeded_fencers);
   int i = 0;
@@ -241,7 +241,9 @@ struct bout * make_DEs(struct fencer * seeded_fencers) {
   }
   int cutoff = pow(2, i-1);
   int not_bye = (n_fencers - cutoff) * 2;
-  printf("tableau: T%d, n_BYEs: %d\n", cutoff, n_fencers - not_bye);
+  int bye = n_fencers - not_bye;
+  printf("tableau: T%d, n_BYEs: %d\n", cutoff, bye);
+  
   return DE_list;
 }
 
@@ -537,7 +539,7 @@ void print_seeding(struct fencer * seed_list) {
     printf("_______________________________________________________________________________\n");
   int count = 1;
   while (seed_list->last_name != NULL) {
-      
+
       int name_length;
     name_length = strlen(seed_list->first_name) + strlen(seed_list->last_name);
       printf("%d.", count);
@@ -549,8 +551,8 @@ void print_seeding(struct fencer * seed_list) {
       printf(" ");
     }
     printf("\t");
-      
-      
+
+
     printf("Club: %s\tRating:%s\tCountry: %s\n", seed_list->club, seed_list->rating, seed_list->country);
     seed_list++;
     count++;
