@@ -33,6 +33,9 @@ void prompt(char * message, int committee_socket, char * type) {// modular desig
   write(committee_socket, buffer, sizeof(buffer)); //writes to socket
   read(committee_socket, buffer, sizeof(buffer)); //reads received value from socket
   printf("received: [%s]\n", buffer);
+  if (strcmp(buffer, "finished") == 0) {
+    exit(0);
+  }
 
   semop(semid, &semrelease, 1); //increase semaphore when finished
 }
@@ -46,9 +49,10 @@ void print_bout(struct bout tada) { //prints the bout struct
 }
 
 static void sighandler(int signo) {
-  if (signo == SIGINT) {
+  if (signo == 0) {
     // close(committee_socket);
-    exit(0);
+    printf("Bam blam\n");
+    exit(1);
   }
 }
 
@@ -79,85 +83,43 @@ int main(int argc, char **argv) {
   }
 
 
-    /***
-    struct bout {
-  int tableau;
-  int winner_seed;
-  int loser_seed;
-  char * referee;
-  char * winner;
-  char * loser;
-  int win_score;
-  int lose_score;
-};  ***/
+  //check what stage the tournament is in
+  printf("What stage of the tournament are you in?\nChoose: [1] for pools\t[2] for DEs.\n");
+  fgets(buffer, sizeof(buffer), stdin); //takes input
+  *strchr(buffer, '\n') = 0;
+  int stage = atoi(buffer) - 1;
 
-    // while (1){
-    //
-    //     char buffer[BUFFER_SIZE];
-    //     char * tmp = strdup(buffer);
-    //     unsigned char * data;
-    //     struct bout new_bout;
-    //     signal(SIGPIPE, SIG_IGN); //ignore epipe to get rid of sigpipe
-    //
-    //     printf("Referee Last Name? \n");
-    //     fgets(buffer, sizeof(buffer), stdin); //takes input
-    //     *strchr(buffer, '\n') = 0;
-    //     tmp = strdup(buffer);
-    //     new_bout.referee = tmp;
-    //
-    //     printf("Winner Last Name? \n");
-    //     fgets(buffer, sizeof(buffer), stdin); //takes input
-    //     *strchr(buffer, '\n') = 0;
-    //     tmp = strdup(buffer);
-    //     new_bout.winner = tmp;
-    //
-    //     printf("Winner Score? \n");
-    //     fgets(buffer, sizeof(buffer), stdin); //takes input
-    //     *strchr(buffer, '\n') = 0;
-    //     tmp = strdup(buffer);
-    //     new_bout.win_score = atoi(tmp);
-    //
-    //     printf("Loser Last Name?: \n");
-    //     fgets(buffer, sizeof(buffer), stdin); //takes input
-    //     *strchr(buffer, '\n') = 0;
-    //     tmp = strdup(buffer);
-    //     new_bout.loser = tmp;
-    //
-    //     printf("Loser Score? \n");
-    //     fgets(buffer, sizeof(buffer), stdin); //takes input
-    //     *strchr(buffer, '\n') = 0;
-    //     tmp = strdup(buffer);
-    //     new_bout.lose_score = atoi(tmp);
-    //
-    //     printf("HAAHAHAHAA IM SENDING THIS BOUT SCORE\n");
-    //     print_bout(new_bout);
-    //
-    //     data = (unsigned char *) malloc(sizeof(new_bout));
-    //     memcpy(data, &new_bout, sizeof(new_bout));
-    //
-    //     printf("still here 1\n");
-    //     if (write(committee_socket, data, sizeof(data)) < 0) {
-    //       printf("%s\n", strerror(errno));
-    //     }
-    //     printf("still here 2\n");
-    //     read(committee_socket, data, sizeof(data));
-    //     printf("still here 3\n");
-    //     printf("received\n");
-    //     memcpy(&new_bout, data, sizeof(*data));
-    //     print_bout(new_bout);
-    //
-    // }
+  if (!stage) { //pools was chosen
+    prompt("Last Name?: \n", committee_socket, "ref:"); //prompt referee name
+    printf("Registered Ref\n");
+    // // read(committee_socket, buffer, sizeof(buffer)); //reads received value from socket
+    // printf("afawf");
+    // printf("%s\n", buffer);
+
+
+    while (1) {
+
+      prompt("Bout winner: \n", committee_socket, "win:"); //prompt winner name
+      prompt("Winner's score: \n", committee_socket, "wsc:"); //prompt winner score
+      prompt("Bout loser: \n", committee_socket, "los:"); //prompt loser name
+      prompt("Loser's score: \n", committee_socket, "lsc:"); //prompt loser score
+    }
+  }
+  else { //DEs was chosen
 
     prompt("Last Name?: \n", committee_socket, "ref:"); //prompt referee name
     printf("Registered Ref\n");
 
-    int bout_count = 0;
-    
-  while (bout_count < 10) {
-      
-    prompt("Bout winner: \n", committee_socket, "win:"); //prompt winner name
-    prompt("Winner's score: \n", committee_socket, "wsc:"); //prompt winner score
-    prompt("Bout loser: \n", committee_socket, "los:"); //prompt loser name
-    prompt("Loser's score: \n", committee_socket, "lsc:"); //prompt loser score
+
+    while (1) {
+
+      prompt("Bout winner: \n", committee_socket, "win:"); //prompt winner name
+      prompt("Winner's score: \n", committee_socket, "wsc:"); //prompt winner score
+      prompt("Bout loser: \n", committee_socket, "los:"); //prompt loser name
+      prompt("Loser's score: \n", committee_socket, "lsc:"); //prompt loser score
+    }
+
   }
+
+
 }

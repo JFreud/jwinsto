@@ -28,16 +28,6 @@ static void sighandler(int signo) {
 }
 
 
-
-
-
-// static void sighandler(int signo) {
-//   if (signo == SIGINT) {// if connection is interrupted with ctrl + c
-//     remove("luigi");
-//     exit(0);
-//   }
-// }
-
 void print_refs(struct referee * rlist) {
   while (rlist->last_name != NULL) {
     printf("fname: %s\n", rlist->first_name);
@@ -254,10 +244,10 @@ struct bout * first_DE(struct fencer * seeded_fencers) {
     int n_referees = count_referees(ref_list);
 
     int referee_index = 0;
-    
+
     int z = 0;
     for(; z < (n_fencers - cutoff); z++){
-        
+
         printf("Can we get here?\n");
 
         struct bout * next = malloc(200);
@@ -266,7 +256,7 @@ struct bout * first_DE(struct fencer * seeded_fencers) {
         next->referee = ref_list[referee_index % n_referees].last_name;
         referee_index++;
             printf("\n\nDE bout %d\n", z);
-        
+
         print_bout(*next);
 
         DE_list[z] = *next;
@@ -287,7 +277,7 @@ struct bout * later_DEs(struct fencer * seeded_fencers){
     int n_referees = count_referees(ref_list);
 
     int referee_index = 0;
-    
+
     printf("testing questionmark: %d\n", questionmark(16));
 
     if (questionmark(n_fencers)){
@@ -651,9 +641,10 @@ int main() {
   int listen_socket = committee_setup(); //creates listening socket
   struct pool_fencer ** all_pools = malloc(1000);
   int pool_num = 0;
+  int client_socket;
   while (pool_num <= n_pools) { //change to while not all pools filled out
 
-    int client_socket = committee_connect(listen_socket); //runs accept call to connect committee with client
+    client_socket = committee_connect(listen_socket); //runs accept call to connect committee with client
     if (fork()) { //forking server!
       printf("forked!\n");
       close(client_socket); //end connection
@@ -678,24 +669,20 @@ int main() {
             all_pools[pool_num] = single_pool;
             // printf("last uh name: %s\n", all_pools[pool_num]->last_name);
         }
+      }
       pool_num++;
-      printf("line 392?\n");
-      // print_pool(all_pools[pool_num]); <----- WHY DOESN'T THIS LINE WORK??
-      printf("post-print\n");
-      struct pool_fencer * seeded = seed(all_pools);
-      printf("\n\n=======POST-POOL SEEDING ORDER======\n\n");
-      print_pool(seeded);
-      printf("POST PRINT\n");
-      struct fencer * seeded_info = convert_fcinfo(seeded, fens);
-      printf("\n\n=======REAL SEEDING LIST=======\n\n");
-      // print_fens(seeded_info);
-      print_seeding(seeded_info);
-
-      struct bout * curDEs = later_DEs(seeded_info);
-      curDEs = subDE(client_socket, curDEs);
-      //now convert back to struct fencer ig
     }
-  }
+  struct pool_fencer * seeded = seed(all_pools);
+  printf("\n\n=======POST-POOL SEEDING ORDER======\n\n");
+  print_pool(seeded);
+  printf("POST PRINT\n");
+  struct fencer * seeded_info = convert_fcinfo(seeded, fens);
+  printf("\n\n=======REAL SEEDING LIST=======\n\n");
+  // print_fens(seeded_info);
+  print_seeding(seeded_info);
+  struct bout * curDEs = later_DEs(seeded_info);
+  curDEs = subDE(client_socket, curDEs);
+  //now convert back to struct fencer ig
   free(refs);
   free(fens);
   free(pools);
@@ -744,7 +731,33 @@ int compute_n_bouts(struct pool_fencer * pool) { //compute how many bouts in a p
 }
 
 struct bout * subDE(int client_socket, struct bout * curDEs) {
+  read(client_socket, buffer, sizeof(buffer));
+  input = strdup(buffer);
+  type = strsep(&input, ":");
+  printf("%s\n", type);
+  if (strcmp(type, "ref") == 0) { //if input is ref name fill out that part of bout info
+      int i = 0;
+      while(strcmp(curDEs[i].referee, input) != 0){ //ALERT: WILL RUN FOREVER IF TYPO IN REF NAME
+          i++;
+      }
+      referee = input;
+  }
+  else { //type != ref for some reason
+    printf("something went wrong\n");
+    printf("%s\n", strerror(errno));
+    exit(1);
+  }
   return curDEs;
+}
+
+char * send_pool(struct pool_fencer * pool) {
+  char * buffer = malloc(1000);
+  strcpy(buffer, "Fencers in your pool: \n");
+  while (pool->last_name != NULL) {
+    strcat(pool->last_name, buffer);
+    strcat("\n", buffer);
+  }
+  return buffer;
 }
 
 struct pool_fencer * subcommittee(int client_socket, struct fencer ** assigned_pool) {
@@ -782,6 +795,9 @@ struct pool_fencer * subcommittee(int client_socket, struct fencer ** assigned_p
 
   struct pool_fencer * pool = malloc(1000);
   pool = create(real_assigned_pool);
+
+  // strcpy(buffer, send_pool(pool));
+  // write(client_socket, buffer, sizeof(buffer));
 
   if (debug == 1) {
     pool = test_pool0();
@@ -843,7 +859,11 @@ struct pool_fencer * subcommittee(int client_socket, struct fencer ** assigned_p
       printf("Something isn't right\n");
       exit(0);
     }
+    if (bout_count == n_bouts) {
+      strcpy(buffer, "finished");
+    }
     write(client_socket, buffer, sizeof(buffer)); //tell client what was received so it can print and user can verify
+
   }
   close(client_socket);
   printf("done with bouts\n");
