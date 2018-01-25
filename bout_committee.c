@@ -13,6 +13,7 @@ struct fencer ** make_pools(struct fencer * fclist, struct referee * rlist);
 void display_pools(struct pool_fencer * pf);
 void print_pools(struct fencer ** pools);
 void print_bout(struct bout tada);
+struct bout * subDE(int client_socket, struct bout * curDEs);
 
 
 int debug = 1; //if on uses hardcoded pool, if off will run program normally
@@ -232,67 +233,75 @@ void display_pools(struct pool_fencer * pf) {
 }
 
 
-int questionmark(int n){
-    
+int questionmark(int n){ //this will not work for greater than 2^9 fencers
+
     if(isdigit(log2((double)n) )){
         return 1;
     }
     return 0;
-    
+
 }
 
 struct bout * first_DE(struct fencer * seeded_fencers) {
   struct bout * DE_list = malloc(1000); //list of bouts for this round of DEs
   int n_fencers = count_fencers(seeded_fencers); //number of fencers
   int i = 0;
-  while (pow(2, i) < n_fencers) {
+  while (pow(2, i) <= n_fencers) {
     i++;
   }
   int cutoff = pow(2, i-1); //factor of two, less than n_fencers
-  int not_bye = (n_fencers - cutoff) * 2; 
+  int not_bye = (n_fencers - cutoff) * 2;
   int bye = n_fencers - not_bye;
   printf("tableau: T%d, n_BYEs: %d\n", cutoff, bye);
-    
+
     int z = 0;
     for(; z < (n_fencers - cutoff); z++){
-        
+
         struct bout * next = malloc(200);
         next->winner = seeded_fencers[n_fencers - (not_bye) + z].last_name;
         next->loser = seeded_fencers[n_fencers - z].last_name;
-        
+
         DE_list[z] = *next;
-        
+
     }
-  
+
   return DE_list;
 }
 
 struct bout * later_DEs(struct fencer * seeded_fencers){
-    
+
     struct bout * DE_list = malloc(1000);
     struct bout * post_bye = malloc(1000);
     struct bout * pre_bye = malloc(1000);
     int n_fencers = count_fencers(seeded_fencers);
-    
+
+    struct referee * ref_list = referee_list("ref_list.csv");
+    int n_referees = count_referees(ref_list);
+
+    int referee_index = 0;
+
     if (!questionmark(n_fencers)){
          return first_DE(seeded_fencers);
     }
-    
+
     else{
-        
+
         int z = 0;
         for(; z < n_fencers/2; z++){
-            
+
         struct bout * next = malloc(200);
         next->winner = seeded_fencers[z].last_name;
         next->loser = seeded_fencers[n_fencers - z].last_name;
-        
+        next->referee = ref_list[referee_index % n_referees].last_name;
+        referee_index++;
+        print_bout(*next);
+
         DE_list[z] = *next;
         }
-        
+
         return DE_list;
     }
-    
+
 }
 
 
@@ -668,6 +677,9 @@ int main() {
       printf("\n\n=======REAL SEEDING LIST=======\n\n");
       // print_fens(seeded_info);
       print_seeding(seeded_info);
+
+      struct bout * curDEs = later_DEs(seeded_info);
+      curDEs = subDE(client_socket, curDEs);
       //now convert back to struct fencer ig
     }
   }
@@ -716,6 +728,10 @@ int compute_n_bouts(struct pool_fencer * pool) { //compute how many bouts in a p
     n_bouts = n_bouts + (n_fencers - 1); //sum of unique individuals each fencer fences
   }
   return n_bouts;
+}
+
+struct bout * subDE(int client_socket, struct bout * curDEs) {
+  return curDEs;
 }
 
 struct pool_fencer * subcommittee(int client_socket, struct fencer ** assigned_pool) {
