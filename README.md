@@ -7,11 +7,13 @@ The current system the United States Fencing Association employs to transfer and
 
 Our system handles the entire tournament system, from referee assignments, pools, DEs, and finals.  
 
-This was not meant to be so long/tedious, but clearly turned out to be.  Enjoy!
+### Some design choices may seem confusing.  Fencing can be a confusing sport, and we did our best to keep USFA convention largely intact, which may result in bafflement, anger, frustration, vexation, and despair. We know because that's how we feel. Enjoy!
 
 ## How to use our project
 
 ### PLEASE READ THIS CAREFULLY.  ANY DEVIATION FROM THESE INSTRUCTIONS WILL HAVE DISASTAROUS CONSEQUENCES, ESPECIALLY TO OUR GRADES
+
+IF YOU ARE RUNNING THIS ON THE SCHOOL MACHINES, in network.h, the union semun function is commented out, please uncomment it.  If it is being tested on Mac OS, you do not need to uncomment it.  Neither Jerome nor Max have windows machines, so we have no idea what to do for that, sorry.
 
 1) After opening a terminal shell, navigate to the `./jwinsto` and run `make`
 2) Execute the Bout Committee by entering `./committee`
