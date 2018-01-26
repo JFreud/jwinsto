@@ -7,11 +7,14 @@ The current system the United States Fencing Association employs to transfer and
 
 Our system handles the entire tournament system, from referee assignments, pools, DEs, and finals.  
 
+## Video Link
+
+
 ### Some design choices may seem confusing.  Fencing can be a confusing sport, and we did our best to keep USFA convention largely intact, which may result in bafflement, anger, frustration, vexation, and despair. We know because that's how we feel. Enjoy!
 
 ## How to use our project
 
-### PLEASE READ THIS CAREFULLY.  ANY DEVIATION FROM THESE INSTRUCTIONS WILL HAVE DISASTAROUS CONSEQUENCES, ESPECIALLY TO OUR GRADES
+### PLEASE READ THIS CAREFULLY.  ANY DEVIATION FROM THESE INSTRUCTIONS WILL HAVE DISASTROUS CONSEQUENCES, ESPECIALLY TO OUR GRADES
 
 IF YOU ARE RUNNING THIS ON A MAC, there is a union semun function in network.h that needs to be commented out.  The Mac OS has already defined it, but the school machines haven't.  Neither Jerome nor Max have Windows machines, so we have no idea what to do for windows sorry.
 
