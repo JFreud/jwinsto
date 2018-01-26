@@ -698,10 +698,7 @@ struct fencer * convert_winners (struct bout ** all_filled) {
   int bigdex = 0;
   int index;
   int smalldex = 0;
-  struct referee * refs = referee_list("ref_list.csv");
-  int n_refs = count_referees(refs);
-  printf("refs: %d\n", n_refs);
-  for(; bigdex < n_refs; bigdex++) {
+  while (all_filled[bigdex] != NULL && all_filled[bigdex]->winner != NULL) {
     smalldex = 0;
     while(all_filled[bigdex][smalldex].referee != NULL) {
       winners[index].last_name = all_filled[bigdex][smalldex].winner;
@@ -709,6 +706,7 @@ struct fencer * convert_winners (struct bout ** all_filled) {
       index++;
       smalldex++;
     }
+    bigdex++;
   }
   print_fens(winners);
   return winners;
@@ -804,7 +802,7 @@ int main() {
     printf("num DEs: %d\n", num_DEs);
 
   }
-  while (num_DEs >= 0) {
+  while (num_DEs > 0) {
         int refdex = 0;
         // printf("hi\n");
         while (refdex < n_refs && refdex < num_DEs) {
@@ -820,6 +818,7 @@ int main() {
               single_filled = subDE(client_socket, curDEs);
               all_filled[refdex] = single_filled;
             }
+          printf("num DEs: %d\n", num_DEs);
           printf("finished ref\n");
           refdex++;
         }
@@ -881,15 +880,6 @@ int compute_n_bouts(struct pool_fencer * pool) { //compute how many bouts in a p
   return n_bouts;
 }
 
-int DE_size(struct bout * DE_list) {
-  int size = 0;
-  while(DE_list->referee != NULL) {
-    size++;
-    DE_list++;
-  }
-  return size;
-}
-
 struct bout * subDE(int client_socket, struct bout * curDEs) {
   printf("===========SUB DE-ING=========\n");
   char buffer[BUFFER_SIZE];
@@ -904,7 +894,7 @@ struct bout * subDE(int client_socket, struct bout * curDEs) {
   input = strdup(buffer);
   type = strsep(&input, ":");
   printf("%s\n", type);
-  int n_DEs = DE_size(curDEs);
+  int n_DEs = count_bouts(curDEs);
   int bouts_reffed = 0;
   int cur_reffed = 0;
   if (strcmp(type, "ref") == 0) { //if input is ref name fill out that part of bout info
