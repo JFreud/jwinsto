@@ -13,6 +13,8 @@ This was not meant to be very difficult, but clearly turned out to be.  Enjoy!
 
 ### PLEASE READ THIS CAREFULLY.  ANY DEVIATION FROM THESE INSTRUCTIONS WILL HAVE DISASTAROUS CONSEQUENCES, ESPECIALLY TO OUR GRADES
 
+IF YOU ARE RUNNING THIS ON THE SCHOOL MACHINES, in network.h, the union semun function is commented out, please uncomment it.  If it is being tested on Mac OS, you do not need to uncomment it.  Neither Jerome nor Max have windows machines, so we have no idea what to do for that, sorry.
+
 1) After opening a terminal shell, navigate to the `./jwinsto` and run `make`
 2) Execute the Bout Committee by entering `./committee`
 3) Opening a new terminal shell in the same directory, take the role of a referee by entering `./referee`. You will be prompted to enter either 1 or 2 for pools or DEs, respectively, then to identify yourself.  Note, that you must be a registered referee on the ref list to access this.  (Referees for this tournament are aziz, nazarova, chan)
