@@ -54,7 +54,7 @@ IF YOU ARE RUNNING THIS ON THE SCHOOL MACHINES, in network.h, the union semun fu
 * Occasionally reads in said questionable fencer
 * Very not robust
   * Referees must be very careful typing as putting a typo will result in the entire tournament having to be restarted (and they will probably be fired)
-  * If two fencers have the same last name, the second seeded one will probably disappear off the face of the earth
+  * If two fencers have the same last name, the second seeded one will probably disappear
   * Capitalization, names, punctuation must all follow the given format
   * The fencers and referees must all be written in the csv in a specific way
 * Not very user friendly (not friendly to coders either :( )
@@ -62,3 +62,5 @@ IF YOU ARE RUNNING THIS ON THE SCHOOL MACHINES, in network.h, the union semun fu
 * Referees must receive bout assignments externally and know who is in their pool/DE
 * Uses the winner and loser fields of a bout as storage, thus displaying the higher seed as a predicted winner before the bout has happened
   * It's a feature not a bug...
+* Only displays the winner and not the entire results page with every participant
+* This would have been much cleaner in Python
