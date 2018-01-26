@@ -57,3 +57,10 @@ hardcode sample pool for testing purposes
 computed post pool seeding
 displayed seeding
 linked back to struct fencer to access related info
+
+chanM-freudenbergJ -- 2018-01-25 22:23:25
+added Direct Elimination bouts
+did README
+bug fixing
+added easy pool and easy DE for testing convenience
+tested networking

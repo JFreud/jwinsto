@@ -647,6 +647,18 @@ struct fencer * convert_fcinfo(struct pool_fencer * seeded_fencers, struct fence
   return seeded_info;
 }
 
+struct fencer find_fcinfo(char * winner, struct fencer * fclist) {
+  while(fclist->last_name != NULL) {
+    if(strcmp((*fclist).last_name, winner) == 0) {
+      // printf("cand: %s\n", (*fclist).last_name);
+      return *fclist;
+    }
+    fclist++;
+  }
+  printf("The winner is not actually in the tournament heh\n");
+  return *(fclist - 1); //shouldn't get here
+}
+
 struct pool_fencer * seed(struct pool_fencer ** pools) { //return post-pool seeding of fencers
   struct pool_fencer * seeded_fencers = malloc(1000); //one big thing
   char * lname = malloc(50);
@@ -698,7 +710,7 @@ struct fencer * convert_winners (struct bout ** all_filled) {
   int bigdex = 0;
   int index;
   int smalldex = 0;
-  while (all_filled[bigdex] != NULL && all_filled[bigdex]->winner != NULL) {
+  while (all_filled[bigdex] != NULL && all_filled[bigdex]->referee != NULL) {
     smalldex = 0;
     while(all_filled[bigdex][smalldex].referee != NULL) {
       winners[index].last_name = all_filled[bigdex][smalldex].winner;
@@ -723,7 +735,7 @@ int count_bouts (struct bout * curDEs) {
 
 int main() {
   global_DE_list = malloc(2000);
-  signal(SIGINT, sighandler);
+  // signal(SIGINT, sighandler);
   printf("referees: \n");
   struct referee * refs = malloc(1000);
   refs = referee_list("ref_list.csv");
@@ -788,8 +800,10 @@ int main() {
   // printf("hi\n");
   struct bout * curDEs = later_DEs(seeded_info);
   int num_DEs = count_bouts(curDEs);
+  struct fencer * winners;
   printf("num DEs: %d\n", num_DEs);
   struct bout ** all_filled = malloc(1000);
+  char * top = malloc(500);
   if (easy_DE) {
     all_filled[0] = test_DE0();
     all_filled[1] = test_DE1();
@@ -822,22 +836,31 @@ int main() {
           printf("finished ref\n");
           refdex++;
         }
+        if(num_DEs < n_refs) {
+          int leftovers = n_refs - num_DEs;
+          for (; leftovers <= n_refs; leftovers++) {
+            all_filled[refdex] = NULL;
+            refdex++;
+          }
+        }
     printf("Received all data\n");
-    struct fencer * winners = convert_winners(all_filled);
+    winners = convert_winners(all_filled);
     printf("converted winners\n");
     curDEs = later_DEs(winners);
     num_DEs = count_bouts(curDEs);
     printf("num DEs: %d\n", num_DEs);
+    top = winners[0].last_name;
   }
-  printf("num DEs: %d\n", num_DEs);
-  printf("later DEs\n");
-  printf("hi\n");
+  printf("AND THE WINNER IS... \n");
+  struct fencer won = find_fcinfo(top, fens);
+  printf("%s %s from %s\n", won.first_name, won.last_name, won.club);
   //now convert back to struct fencer ig
   free(refs);
   free(fens);
   free(pools);
   free(all_pools);
-  while(1){}
+  free(all_filled);
+  exit(1);
 }
 
 void print_bout(struct bout tada) { //prints the bout struct
