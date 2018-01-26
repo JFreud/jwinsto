@@ -275,9 +275,11 @@ struct bout * later_DEs(struct fencer * seeded_fencers){
     struct bout * post_bye = malloc(1000);
     struct bout * pre_bye = malloc(1000);
     int n_fencers = count_fencers(seeded_fencers);
-
+    printf("mantis\n");
     struct referee * ref_list = referee_list("ref_list.csv");
+    printf("Po\n");
     int n_referees = count_referees(ref_list);
+    printf("Tigress?\n");
 
     int referee_index = 0;
 
@@ -694,16 +696,20 @@ struct fencer * convert_winners (struct bout ** all_filled) {
   struct fencer * winners = malloc(1000);
   int bigdex = 0;
   int index;
+  int smalldex = 0;
   struct referee * refs = referee_list("ref_list.csv");
   int n_refs = count_referees(refs);
+  printf("refs: %d\n", n_refs);
   for(; bigdex < n_refs; bigdex++) {
-    index = 0;
-    while(all_filled[bigdex][index].referee != NULL) {
-      winners[index].last_name = all_filled[bigdex][index].winner;
+    smalldex = 0;
+    while(all_filled[bigdex][smalldex].referee != NULL) {
+      winners[index].last_name = all_filled[bigdex][smalldex].winner;
       printf("winner: %s\n", winners[index].last_name);
       index++;
+      smalldex++;
     }
   }
+  print_fens(winners);
   return winners;
 }
 
