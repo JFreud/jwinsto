@@ -308,7 +308,8 @@ struct bout * later_DEs(struct fencer * seeded_fencers){
             global_DE_list[z] = *next;
         }
         printf("ho\n");
-        display_DEs(n_fencers, 8);
+        printf("n fencers: %d", n_fencers);
+        display_DEs(n_fencers, n_fencers/2);
         printf("hi\n");
         return DE_list;
     }
@@ -1066,13 +1067,22 @@ void display_DEs(int num_fencers, int tab){
 
     for(; tab > 0; tab--){
 
+        //printf("kann here?\n");
 
         for (;z < tab; z++){
+            //printf("z: %d\n", z);
+            //printf("wbu here 1?\n");
 
             int name_length1, name_length2;
+            
+            //printf("wbu here 2?\n");
             name_length1 = strlen(global_DE_list[z].winner);
+            
+            //printf("wbu here 3?\n");
             if (global_DE_list[z].win_score > 9)
                 name_length1 ++;
+            
+            //printf("wbu here 4?\n");
             name_length2 = strlen(global_DE_list[z].loser);
             if (global_DE_list[z].lose_score > 9)
                 name_length2 ++;
