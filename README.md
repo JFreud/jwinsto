@@ -15,6 +15,8 @@ The current system the United States Fencing Association employs to transfer and
 6) After Pools, you will receive your DE assignments, and be once again prompted to order them.  This continues until you are out of assignments, which signals the committee to give you new bouts, from the new tableau.
 
 ## Bugs and Issues
+* Occasionally seg faults ` ¯\_(ツ)_/¯ `
+* Occasionally reads in questionable fencer
 * Very not robust
   * Referees must be very careful typing as putting a typo in will result in the results not going through
   * If two fencers have the same last name, the second seeded one will probably disappear off the face of the earth
