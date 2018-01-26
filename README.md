@@ -5,13 +5,15 @@
 
 The current system the United States Fencing Association employs to transfer and display results at tournaments is outdated and obsolete. Referees from across the hall must send the fencers to turn in their results at the end of a bout or pool, which are then manually entered into the system. This renders the process slow and prone to human error, something that could be avoided by digitizing the process and having referees submit results directly, thereby reducing wait-time and allowing fencers to immediately catch mistakes in scoring. The goal is to minimize the role of the so-called “bout committee” and ultimately replace it completely.  This is accomplished by creating a committee server, which referees interact with directly through sockets. After each pool or bout, a referee will enter the data, which the committee processes, and then displays, streamlining the whole processing and making it more efficient.
 
-This was meant to be easy, but clearly isn't.  Enjoy!
+Our system handles the entire tournament system, from referee assignments, pools, DEs, and finals.  
+
+This was not meant to be very difficult, but clearly turned out to be.  Enjoy!
 
 ## How to use our project
 
 ### PLEASE READ THIS CAREFULLY.  ANY DEVIATION FROM THESE INSTRUCTIONS WILL HAVE DISASTAROUS CONSEQUENCES, ESPECIALLY TO OUR GRADES
 
-1) After opening a terminal shell, navigate to the ./jwinsto and run `make`
+1) After opening a terminal shell, navigate to the `./jwinsto` and run `make`
 2) Execute the Bout Committee by entering `./committee`
 3) Opening a new terminal shell in the same directory, take the role of a referee by entering `./referee`. You will be prompted to enter either 1 or 2 for pools or DEs, respectively, then to identify yourself.  Note, that you must be a registered referee on the ref list to access this.  (Referees for this tournament are aziz, nazarova, chan)
 
