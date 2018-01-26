@@ -708,15 +708,21 @@ void print_seeding(struct fencer * seed_list) {
 struct fencer * convert_winners (struct bout ** all_filled) {
   struct fencer * winners = malloc(1000);
   int bigdex = 0;
-  int index;
+  int index = 0;
   int smalldex = 0;
-  while (all_filled[bigdex] != NULL && all_filled[bigdex]->referee != NULL) {
+  printf("%s\n",all_filled[bigdex]->referee);
+  printf("hi\n");
+  while (all_filled[bigdex]) {
     smalldex = 0;
+    printf("doing loop\n");
     while(all_filled[bigdex][smalldex].referee != NULL) {
+      printf("get here?\n");
       winners[index].last_name = all_filled[bigdex][smalldex].winner;
+      printf("what here\n");
       printf("winner: %s\n", winners[index].last_name);
       index++;
       smalldex++;
+      printf("%d\n",smalldex);
     }
     bigdex++;
   }
@@ -860,6 +866,7 @@ int main() {
   free(pools);
   free(all_pools);
   free(all_filled);
+  close(client_socket);
   exit(1);
 }
 

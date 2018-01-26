@@ -23,7 +23,7 @@
 #define REF "BLACK_CARD"
 #define HANDSHAKE_BUFFER_SIZE 10
 #define BUFFER_SIZE 1000
-#define PORT "9001"
+#define PORT "9007"
 #define LOOPBACK "127.0.0.1"
 #define KEY 666 //en garde!
 
