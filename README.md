@@ -23,7 +23,7 @@ This was meant to be easy, but clearly isn't.  Enjoy!
   * Referees must be very careful typing as putting a typo in will result in the results not going through
   * If two fencers have the same last name, the second seeded one will probably disappear off the face of the earth
   * etc
-* Not very user friendly
+* Not very user friendly (not friendly to coders either :( )
 * Doesn't account for different fencing tournament forms (e.g. NACs cut off the bottom 20% before calculating DE bouts)
 * (NOTE: RESOLVED) DEs won't work for any event greater than 2^12 fencers. (Which hasn't happened yet but that's what they thought with IPs)
 * Assumes referee user has common sense, and is not trying to break code.  Often, a naive assumption
