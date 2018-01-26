@@ -308,7 +308,8 @@ struct bout * later_DEs(struct fencer * seeded_fencers){
             global_DE_list[z] = *next;
         }
         printf("ho\n");
-        display_DEs(n_fencers, 8);
+        printf("n fencers: %d", n_fencers);
+        display_DEs(n_fencers, n_fencers/2);
         printf("hi\n");
         return DE_list;
     }
@@ -713,6 +714,15 @@ struct fencer * convert_winners (struct bout ** all_filled) {
   return winners;
 }
 
+int count_bouts (struct bout * curDEs) {
+  int size = 0;
+  while(curDEs->referee != NULL) {
+    size++;
+    curDEs++;
+  }
+  return size;
+}
+
 int main() {
   global_DE_list = malloc(2000);
   signal(SIGINT, sighandler);
@@ -779,36 +789,48 @@ int main() {
     // send_pool(seeded);
   // printf("hi\n");
   struct bout * curDEs = later_DEs(seeded_info);
+  int num_DEs = count_bouts(curDEs);
+  printf("num DEs: %d\n", num_DEs);
   struct bout ** all_filled = malloc(1000);
   if (easy_DE) {
     all_filled[0] = test_DE0();
     all_filled[1] = test_DE1();
     all_filled[2] = test_DE2();
+    printf("Received all data\n");
+    struct fencer * winners = convert_winners(all_filled);
+    printf("converted winners\n");
+    curDEs = later_DEs(winners);
+    num_DEs = count_bouts(curDEs);
+    printf("num DEs: %d\n", num_DEs);
+
   }
-  else {
-    int refdex = 0;
-    // printf("hi\n");
-    while (refdex < n_refs) {
-      client_socket = committee_connect(listen_socket); //runs accept call to connect committee with client
-      // printf("HAWIHFW\n");
-        if (fork()) {
-          printf("forked DE!\n");
-          close(client_socket); //end connection
-          while(1){}
+  while (num_DEs >= 0) {
+        int refdex = 0;
+        // printf("hi\n");
+        while (refdex < n_refs && refdex < num_DEs) {
+          client_socket = committee_connect(listen_socket); //runs accept call to connect committee with client
+          // printf("HAWIHFW\n");
+            if (fork()) {
+              printf("forked DE!\n");
+              close(client_socket); //end connection
+              while(1){}
+            }
+            else { //child
+              struct bout * single_filled = malloc(500);
+              single_filled = subDE(client_socket, curDEs);
+              all_filled[refdex] = single_filled;
+            }
+          printf("finished ref\n");
+          refdex++;
         }
-        else { //child
-          struct bout * single_filled = malloc(500);
-          single_filled = subDE(client_socket, curDEs);
-          all_filled[refdex] = single_filled;
-        }
-      printf("finished ref\n");
-      refdex++;
-    }
+    printf("Received all data\n");
+    struct fencer * winners = convert_winners(all_filled);
+    printf("converted winners\n");
+    curDEs = later_DEs(winners);
+    num_DEs = count_bouts(curDEs);
+    printf("num DEs: %d\n", num_DEs);
   }
-  printf("Received all data\n");
-  struct fencer * winners = convert_winners(all_filled);
-  printf("converted winners\n");
-  later_DEs(winners);
+  printf("num DEs: %d\n", num_DEs);
   printf("later DEs\n");
   printf("hi\n");
   //now convert back to struct fencer ig
@@ -1062,17 +1084,26 @@ void display_DEs(int num_fencers, int tab){
 
 
 
-    printf("\nTableau: %d           Tableau: %d\n\n", tab * 2, tab);
+    printf("\nTableau: %d           Tableau: %d (Prediction)\n\n", tab * 2, tab);
 
     for(; tab > 0; tab--){
 
+        //printf("kann here?\n");
 
         for (;z < tab; z++){
+            //printf("z: %d\n", z);
+            //printf("wbu here 1?\n");
 
             int name_length1, name_length2;
+
+            //printf("wbu here 2?\n");
             name_length1 = strlen(global_DE_list[z].winner);
+
+            //printf("wbu here 3?\n");
             if (global_DE_list[z].win_score > 9)
                 name_length1 ++;
+
+            //printf("wbu here 4?\n");
             name_length2 = strlen(global_DE_list[z].loser);
             if (global_DE_list[z].lose_score > 9)
                 name_length2 ++;
