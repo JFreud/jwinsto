@@ -66,4 +66,6 @@ IF YOU ARE RUNNING THIS ON A MAC, there is a union semun function in network.h t
 * Uses the winner and loser fields of a bout as storage, thus displaying the higher seed as a predicted winner before the bout has happened
   * It's a feature not a bug...
 * Only displays the winner and not the entire results page with every participant
+* The place column in the pool does not update
+* The points in the display DE (shown in parentheses) don't update so they're always shown as zero
 * This would have been much cleaner in Python
