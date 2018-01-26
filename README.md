@@ -15,7 +15,7 @@ This was meant to be easy, but clearly isn't.  Enjoy!
 2) Execute the Bout Committee by entering `./committee`
 3) Opening a new terminal shell in the same directory, take the role of a referee by entering `./referee`. You will be prompted to enter either 1 or 2 for pools or DEs, respectively, then to identify yourself.  Note, that you must be a registered referee on the ref list to access this.  (Referees for this tournament are aziz, nazarova, chan)
 
-In a normal tournament format, pools would be fenced first, then DEs.  However, for the convenience of the reviewer, `easy_pool` and `easy_DE` (in bout_commitee.c, line 21 and 22) are set to 1, which automatically enters pre-determined pool results, as well as for the first round of DEs (The table of 16). If you choose to use these pre-set results, skip step 4.  
+    In a normal tournament format, pools would be fenced first, then DEs.  However, for the convenience of the reviewer, `easy_pool` and `easy_DE` (in bout_commitee.c, line 21 and 22) are set to 1, which automatically enters pre-determined pool results, as well as for the first round of DEs (The table of 16). If you choose to use these pre-set results, skip step 4.  
 
 4) To manually enter pools or first round DE results, open bout_committee.c, and set `easy_pool` and `easy_DE` to 0, then repeat steps 1-3 above.  You will then be prompted to enter (in succession): Bout Winner, Winner Score, Bout Loser, Loser Score.  Identify the winner and loser by their last name in lower-case, and use numbers to report their score.  If you are unsure of which fencers you are reffing, the bout_committee prints the fencers in your pool.
 
@@ -23,7 +23,7 @@ In a normal tournament format, pools would be fenced first, then DEs.  However, 
 
 * NOTE: Due to a bug we haven't had a chance to fix, after all pool results have been entered, you must hit any letter, and then hit enter to continue.  
 
-    The tournament cannot continue until all pool results from every referee are entered. Therefore, after entering data for one referee, exit the `./referee` program, and run it again, but this time for a different referee.  Repeat this step (step 4) until pool results for all referees (aziz, nazarova, chan) have been entered.
+    The tournament cannot continue until all pool results from every referee are entered. Therefore, after entering data for one referee, exit the `./referee` program, and run it again, but this time for a different referee.  Repeat this step (step four) until pool results for all referees (aziz, nazarova, chan) have been entered.
 
 5) After Pools, you will receive your DE assignments, and be once again prompted to enter results for them.  Post pool seeding is determined by results in pools.  First, the Win/Loss ratio is considered, and if people have the same fraction, the Indicator (Number of Touches scored, minus number of touches received) is used to order the fencers.
 
