@@ -13,7 +13,7 @@ Our system handles the entire tournament system, from referee assignments, pools
 
 ### PLEASE READ THIS CAREFULLY.  ANY DEVIATION FROM THESE INSTRUCTIONS WILL HAVE DISASTAROUS CONSEQUENCES, ESPECIALLY TO OUR GRADES
 
-IF YOU ARE RUNNING THIS ON THE SCHOOL MACHINES, in network.h, the union semun function is commented out, please uncomment it.  If it is being tested on Mac OS, you do not need to uncomment it.  Neither Jerome nor Max have windows machines, so we have no idea what to do for that, sorry.
+IF YOU ARE RUNNING THIS ON A MAC, there is a union semun function in network.h that needs to be commented out.  The Mac OS has already defined it, but the school machines haven't.  Neither Jerome nor Max have Windows machines, so we have no idea what to do for windows sorry.
 
 1) After opening a terminal shell, navigate to the `./jwinsto` and run `make`
 2) Execute the Bout Committee by entering `./committee`
