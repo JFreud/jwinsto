@@ -68,4 +68,5 @@ IF YOU ARE RUNNING THIS ON A MAC, there is a union semun function in network.h t
 * Only displays the winner and not the entire results page with every participant
 * The place column in the pool does not update
 * The points in the display DE (shown in parentheses) don't update so they're always shown as zero
+* After the referee enters the final result, he/she must type in another character or sigint for bout committee to continue
 * This would have been much cleaner in Python
