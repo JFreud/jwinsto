@@ -8,7 +8,7 @@ The current system the United States Fencing Association employs to transfer and
 Our system handles the entire tournament system, from referee assignments, pools, DEs, and finals.  
 
 ## Video Link
-
+https://youtu.be/GbJzExkEBwM
 
 ### Some design choices may seem confusing.  Fencing can be a confusing sport, and we did our best to keep USFA convention largely intact, which may result in bafflement, anger, frustration, vexation, and despair. We know because that's how we feel. Enjoy!
 
