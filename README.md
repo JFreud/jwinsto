@@ -5,6 +5,8 @@
 
 The current system the United States Fencing Association employs to transfer and display results at tournaments is outdated and obsolete. Referees from across the hall must send the fencers to turn in their results at the end of a bout or pool, which are then manually entered into the system. This renders the process slow and prone to human error, something that could be avoided by digitizing the process and having referees submit results directly, thereby reducing wait-time and allowing fencers to immediately catch mistakes in scoring. The goal is to minimize the role of the so-called “bout committee” and ultimately replace it completely.  This is accomplished by creating a committee server, which referees interact with directly through sockets. After each pool or bout, a referee will enter the data, which the committee processes, and then displays, streamlining the whole processing and making it more efficient.
 
+This was meant to be easy, but clearly isn't.  Enjoy!
+
 ## How to use our project
 
 1) In the director, run `make`
@@ -24,3 +26,4 @@ The current system the United States Fencing Association employs to transfer and
 * Not very user friendly
 * Doesn't account for different fencing tournament forms (e.g. NACs cut off the bottom 20% before calculating DE bouts)
 * (NOTE: RESOLVED) DEs won't work for any event greater than 2^12 fencers. (Which hasn't happened yet but that's what they thought with IPs)
+* Assumes referee user has common sense, and is not trying to break code.  Often, a naive assumption
